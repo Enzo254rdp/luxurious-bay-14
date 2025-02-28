@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useScrollPosition } from "../hooks/use-mobile";
+import { useScrollPosition } from "../hooks/use-scroll";
 import { useWishlistStore, useCartStore } from "../lib/store";
 import { Heart, ShoppingCart, User, Search, Menu, X, ChevronDown } from "lucide-react";
 import EnzoBayLogo from "./EnzoBayLogo";
@@ -264,7 +264,7 @@ export default function Navbar() {
           
           <div className="pt-5 pb-4 px-4">
             <div className="flex items-center">
-              <EnzoBayLogo />
+              <EnzoBayLogo size="sm" />
             </div>
           </div>
           

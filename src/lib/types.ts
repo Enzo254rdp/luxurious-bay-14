@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -35,6 +34,87 @@ export interface Category {
   description: string;
   image: string;
 }
+
+// Define the Banner interface
+export interface Banner {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  image: string;
+  position: 'home_top' | 'home_middle' | 'category_top' | 'product_page' | 'cart_page' | 'site_wide';
+  status: 'active' | 'inactive';
+  priority: number;
+  backgroundColor?: string;
+  textColor?: string;
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+  updatedAt: string;
+  animation?: 'fade' | 'slide' | 'bounce' | 'pulse' | 'none';
+  size?: 'small' | 'medium' | 'large';
+}
+
+// Sample banners data
+export const BANNERS: Banner[] = [
+  {
+    id: 'banner-1',
+    title: 'Summer Sale',
+    subtitle: 'Up to 50% Off',
+    description: 'Limited time offer on summer collections',
+    ctaText: 'Shop Now',
+    ctaLink: '/sale',
+    image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    position: 'home_top',
+    status: 'active',
+    priority: 1,
+    backgroundColor: '#ff6b6b',
+    textColor: '#ffffff',
+    startDate: '2023-06-01T00:00:00Z',
+    endDate: '2023-08-31T23:59:59Z',
+    createdAt: '2023-05-15T12:00:00Z',
+    updatedAt: '2023-05-15T12:00:00Z',
+    animation: 'fade',
+    size: 'small'
+  },
+  {
+    id: 'banner-2',
+    title: 'New Arrivals',
+    subtitle: 'Premium Collections',
+    description: 'Discover our latest products',
+    ctaText: 'Explore',
+    ctaLink: '/products?new=true',
+    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    position: 'home_middle',
+    status: 'active',
+    priority: 2,
+    backgroundColor: '#4dabf7',
+    textColor: '#ffffff',
+    createdAt: '2023-05-20T12:00:00Z',
+    updatedAt: '2023-05-20T12:00:00Z',
+    animation: 'slide',
+    size: 'medium'
+  },
+  {
+    id: 'banner-3',
+    title: 'Free Shipping',
+    subtitle: 'On Orders Over KSh 5,000',
+    ctaText: 'Learn More',
+    ctaLink: '/shipping',
+    image: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80',
+    position: 'site_wide',
+    status: 'active',
+    priority: 3,
+    backgroundColor: '#20c997',
+    textColor: '#ffffff',
+    createdAt: '2023-05-25T12:00:00Z',
+    updatedAt: '2023-05-25T12:00:00Z',
+    animation: 'pulse',
+    size: 'small'
+  }
+];
 
 // Mock data
 export const PRODUCTS: Product[] = [

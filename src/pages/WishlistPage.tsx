@@ -212,7 +212,7 @@ export default function WishlistPage() {
                                 </div>
                                 
                                 <p className="mt-1 text-sm text-enzobay-neutral-500">
-                                  {product.availability ? "In Stock" : "Out of Stock"}
+                                  {product.inStock ? "In Stock" : "Out of Stock"}
                                 </p>
                               </div>
                               

@@ -1,138 +1,289 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, Star, Eye, ShoppingBag } from "lucide-react";
+import { formatPrice } from "../lib/utils";
 import { Product } from "../lib/types";
+import { useCartStore, useWishlistStore } from "../lib/store";
 
 interface ProductCardProps {
   product: Product;
+  size?: "sm" | "md" | "lg";
+  layout?: "grid" | "list";
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ 
+  product, 
+  size = "md",
+  layout = "grid" 
+}: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addItem } = useCartStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
+  const productInWishlist = isInWishlist(product.id);
+  
+  // Calculate discounted price if applicable
+  const originalPrice = product.price;
+  const discountedPrice = product.discount 
+    ? originalPrice * (1 - product.discount / 100) 
+    : originalPrice;
+  
+  const quickAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product, 1);
   };
-
-  const calculateDiscountedPrice = (price: number, discount?: number) => {
-    if (!discount) return price;
-    return price * (1 - discount / 100);
+  
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (productInWishlist) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
   };
-
-  return (
-    <div 
-      className="product-card group h-full flex flex-col bg-white"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Product Image */}
-      <div className="relative overflow-hidden aspect-square">
-        <Link to={`/product/${product.id}`}>
+  
+  const sizeClasses = {
+    sm: {
+      card: "max-w-[180px]",
+      imageContainer: "h-[160px]",
+      title: "text-xs line-clamp-1",
+      price: "text-sm",
+    },
+    md: {
+      card: "max-w-[280px]",
+      imageContainer: "h-[220px]",
+      title: "text-sm line-clamp-2",
+      price: "text-base",
+    },
+    lg: {
+      card: "max-w-[340px]",
+      imageContainer: "h-[280px]",
+      title: "text-base line-clamp-2",
+      price: "text-lg",
+    },
+  };
+  
+  if (layout === "list") {
+    return (
+      <Link 
+        to={`/product/${product.id}`}
+        className="group bg-white border border-enzobay-neutral-200 hover:border-enzobay-neutral-300 rounded-lg overflow-hidden flex transition-all duration-300 hover:shadow-md relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative h-[160px] w-[160px] flex-shrink-0">
           <img 
             src={product.images[0]} 
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
-        </Link>
-        
-        {/* Hover Actions */}
-        <div 
-          className={`absolute inset-0 bg-black/5 flex items-end justify-center pb-6 transition-opacity duration-300 ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className="flex gap-3">
-            <button 
-              className="bg-white rounded-full p-2.5 shadow-md hover:bg-enzobay-orange hover:text-white transition-colors duration-300"
-              aria-label="Add to wishlist"
-            >
-              <Heart className="h-5 w-5" />
-            </button>
-            <button 
-              className="bg-white rounded-full p-2.5 shadow-md hover:bg-enzobay-orange hover:text-white transition-colors duration-300"
-              aria-label="Add to cart"
-            >
-              <ShoppingCart className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          {product.isNew && (
-            <span className="blue-gradient text-white text-xs font-medium px-2.5 py-1 rounded">New</span>
-          )}
+          
           {product.discount && (
-            <span className="gold-gradient text-white text-xs font-medium px-2.5 py-1 rounded">
-              -{product.discount}%
-            </span>
+            <div className="absolute top-2 left-2 bg-enzobay-orange text-white text-xs font-bold px-2 py-1 rounded">
+              {product.discount}% OFF
+            </div>
+          )}
+          
+          {product.isNew && (
+            <div className="absolute top-2 right-2 bg-enzobay-blue text-white text-xs font-bold px-2 py-1 rounded">
+              NEW
+            </div>
           )}
         </div>
         
-        {/* Quick Add Button (Jumia-like) */}
-        <div 
-          className={`absolute bottom-0 left-0 right-0 bg-enzobay-orange text-white text-center py-2 text-sm font-medium transition-transform duration-300 ${
-            isHovered ? "translate-y-0" : "translate-y-full"
-          }`}
-        >
-          Quick Add
-        </div>
-      </div>
-      
-      {/* Product Info */}
-      <div className="p-3 flex flex-col flex-1">
-        <Link to={`/product/${product.id}`} className="block">
-          <h3 className="text-sm md:text-base font-medium line-clamp-2 text-enzobay-neutral-800 group-hover:text-enzobay-orange transition-colors duration-300 mb-1">
-            {product.name}
-          </h3>
-        </Link>
-        
-        <div className="flex items-center mt-auto">
-          <div className="flex flex-col">
-            {product.discount ? (
-              <>
-                <span className="font-semibold text-enzobay-brown">
-                  {formatPrice(calculateDiscountedPrice(product.price, product.discount))}
-                </span>
-                <span className="text-xs text-enzobay-neutral-500 line-through">
-                  {formatPrice(product.price)}
-                </span>
-              </>
-            ) : (
-              <span className="font-semibold text-enzobay-brown">
-                {formatPrice(product.price)}
+        <div className="flex-1 p-4 flex flex-col">
+          {/* Product title and rating */}
+          <div className="mb-1">
+            <h3 className="text-sm font-medium text-enzobay-brown line-clamp-2">
+              {product.name}
+            </h3>
+            
+            <div className="flex items-center mt-1">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star 
+                    key={i}
+                    className={`h-3 w-3 ${
+                      i < Math.floor(product.rating)
+                        ? "text-enzobay-orange fill-enzobay-orange"
+                        : "text-enzobay-neutral-300"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="ml-1 text-xs text-enzobay-neutral-500">
+                ({product.reviews})
               </span>
+            </div>
+          </div>
+          
+          {/* Product price */}
+          <div className="flex items-baseline mt-1">
+            <p className="text-base font-medium text-enzobay-brown">
+              {formatPrice(discountedPrice)}
+            </p>
+            {product.discount && (
+              <p className="ml-2 text-sm text-enzobay-neutral-500 line-through">
+                {formatPrice(originalPrice)}
+              </p>
             )}
           </div>
           
-          <div className="ml-auto flex items-center">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-3 w-3 ${
-                    i < Math.floor(product.rating)
-                      ? "text-enzobay-orange"
-                      : "text-enzobay-neutral-300"
-                  }`}
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
+          <p className="mt-2 text-xs text-enzobay-neutral-600 line-clamp-2">
+            {product.description}
+          </p>
+          
+          {/* Action buttons - only shown on hover on desktop */}
+          <div className="flex items-center justify-between mt-auto pt-4">
+            <div className="flex items-center">
+              {product.brand && (
+                <span className="text-xs text-enzobay-neutral-600">
+                  {product.brand}
+                </span>
+              )}
             </div>
-            <span className="text-xs text-enzobay-neutral-500 ml-1">({product.reviews})</span>
+            
+            <div className={`flex space-x-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0 md:opacity-0'}`}>
+              <button
+                onClick={toggleWishlist}
+                className={`p-1.5 rounded-full ${
+                  productInWishlist 
+                    ? 'bg-red-50 text-red-500' 
+                    : 'bg-enzobay-neutral-100 text-enzobay-neutral-700 hover:text-enzobay-blue'
+                }`}
+                aria-label={productInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                <Heart className={`h-4 w-4 ${productInWishlist ? 'fill-red-500' : ''}`} />
+              </button>
+              
+              <button
+                onClick={quickAddToCart}
+                className="p-1.5 rounded-full bg-enzobay-neutral-100 text-enzobay-neutral-700 hover:text-enzobay-blue"
+                aria-label="Quick add to cart"
+              >
+                <ShoppingBag className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
+      </Link>
+    );
+  }
+  
+  return (
+    <Link 
+      to={`/product/${product.id}`}
+      className={`group bg-white border border-enzobay-neutral-200 hover:border-enzobay-neutral-300 rounded-lg overflow-hidden block transition-all duration-300 hover:shadow-md relative ${sizeClasses[size].card}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className={`relative ${sizeClasses[size].imageContainer}`}>
+        <img 
+          src={product.images[0]} 
+          alt={product.name}
+          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+        />
+        
+        {product.discount && (
+          <div className="absolute top-2 left-2 bg-enzobay-orange text-white text-xs font-bold px-2 py-1 rounded">
+            {product.discount}% OFF
+          </div>
+        )}
+        
+        {product.isNew && (
+          <div className="absolute top-2 right-2 bg-enzobay-blue text-white text-xs font-bold px-2 py-1 rounded">
+            NEW
+          </div>
+        )}
+        
+        {/* Quick action buttons - only shown on hover */}
+        <div 
+          className={`absolute inset-0 bg-black/5 flex items-center justify-center gap-2 transition-opacity duration-300 ${
+            isHovered ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <button
+            onClick={toggleWishlist}
+            className={`p-2 rounded-full backdrop-blur-sm ${
+              productInWishlist 
+                ? 'bg-red-50/90 text-red-500' 
+                : 'bg-white/80 text-enzobay-neutral-700 hover:text-enzobay-blue'
+            }`}
+            aria-label={productInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart className={`h-5 w-5 ${productInWishlist ? 'fill-red-500' : ''}`} />
+          </button>
+          
+          <button
+            onClick={quickAddToCart}
+            className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-enzobay-neutral-700 hover:text-enzobay-blue"
+            aria-label="Quick add to cart"
+          >
+            <ShoppingBag className="h-5 w-5" />
+          </button>
+          
+          <Link
+            to={`/product/${product.id}`}
+            className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-enzobay-neutral-700 hover:text-enzobay-blue"
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Quick view"
+          >
+            <Eye className="h-5 w-5" />
+          </Link>
+        </div>
       </div>
-    </div>
+      
+      <div className="p-3">
+        {/* Product title and rating */}
+        <div className="mb-1">
+          <h3 className={`font-medium text-enzobay-brown ${sizeClasses[size].title}`}>
+            {product.name}
+          </h3>
+          
+          <div className="flex items-center mt-1">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star 
+                  key={i}
+                  className={`h-3 w-3 ${
+                    i < Math.floor(product.rating)
+                      ? "text-enzobay-orange fill-enzobay-orange"
+                      : "text-enzobay-neutral-300"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="ml-1 text-xs text-enzobay-neutral-500">
+              ({product.reviews})
+            </span>
+          </div>
+        </div>
+        
+        {/* Product price */}
+        <div className="flex items-baseline mt-1">
+          <p className={`font-medium text-enzobay-brown ${sizeClasses[size].price}`}>
+            {formatPrice(discountedPrice)}
+          </p>
+          {product.discount && (
+            <p className="ml-2 text-sm text-enzobay-neutral-500 line-through">
+              {formatPrice(originalPrice)}
+            </p>
+          )}
+        </div>
+        
+        {/* Brand or category tag */}
+        {product.brand && (
+          <div className="mt-2">
+            <span className="inline-block text-xs bg-enzobay-neutral-100 text-enzobay-neutral-700 px-2 py-0.5 rounded">
+              {product.brand}
+            </span>
+          </div>
+        )}
+      </div>
+    </Link>
   );
 }

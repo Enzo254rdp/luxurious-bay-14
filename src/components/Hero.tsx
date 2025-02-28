@@ -1,107 +1,241 @@
 
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShoppingBag, Star, Clock } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative">
-      <div className="absolute inset-0">
-        <img 
-          src="https://images.unsplash.com/photo-1556742393-d75f468bfcb0?q=80&w=2070&auto=format&fit=crop" 
-          alt="Hero background" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-enzobay-brown-light/80 to-enzobay-brown-light/30"></div>
-      </div>
-      
-      <div className="relative container mx-auto px-4 py-24 md:py-32 lg:py-40">
-        <div className="max-w-xl">
-          <span className="inline-block px-4 py-1 text-sm font-medium rounded-full bg-enzobay-orange text-white mb-6 animate-fade-in">
-            Summer Collection 2023
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 animate-fade-in" style={{animationDelay: "0.1s"}}>
-            Elevate Your <span className="text-enzobay-orange">Style</span> With Premium Pieces
-          </h1>
-          <p className="text-white/90 text-lg mb-8 animate-fade-in" style={{animationDelay: "0.2s"}}>
-            Discover our exclusive collection of luxury items handpicked for the discerning individual. Quality pieces that make a statement.
-          </p>
-          <div className="flex flex-wrap gap-4 animate-fade-in" style={{animationDelay: "0.3s"}}>
-            <Link 
-              to="/products" 
-              className="btn-primary flex items-center gap-2"
+    <>
+      {/* Main Hero Section */}
+      <section className="relative bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+            <svg
+              className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2"
+              fill="currentColor"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
             >
-              Shop Now <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link 
-              to="/flash-sale" 
-              className="bg-white text-enzobay-brown hover:bg-white/90 py-2.5 px-6 rounded-md transition-colors font-medium"
-            >
-              Flash Sale
-            </Link>
-          </div>
-        </div>
-      </div>
-      
-      {/* Feature Boxes */}
-      <div className="relative bg-white border-b border-enzobay-neutral-200">
-        <div className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="flex items-center gap-3 animate-fade-in" style={{animationDelay: "0.4s"}}>
-              <div className="w-10 h-10 bg-enzobay-orange/10 rounded-full flex items-center justify-center text-enzobay-orange flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
-                  <path d="M6 12h.01M18 12h.01" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-enzobay-brown">Secure Payment</h3>
-                <p className="text-sm text-enzobay-neutral-600">100% secure transactions</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 animate-fade-in" style={{animationDelay: "0.5s"}}>
-              <div className="w-10 h-10 bg-enzobay-blue/10 rounded-full flex items-center justify-center text-enzobay-blue flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-enzobay-brown">Premium Quality</h3>
-                <p className="text-sm text-enzobay-neutral-600">Certified authentic products</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 animate-fade-in" style={{animationDelay: "0.6s"}}>
-              <div className="w-10 h-10 bg-enzobay-orange/10 rounded-full flex items-center justify-center text-enzobay-orange flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="1" y="3" width="15" height="13" />
-                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                  <circle cx="5.5" cy="18.5" r="2.5" />
-                  <circle cx="18.5" cy="18.5" r="2.5" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-enzobay-brown">Free Shipping</h3>
-                <p className="text-sm text-enzobay-neutral-600">On orders over KSH 5,000</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3 animate-fade-in" style={{animationDelay: "0.7s"}}>
-              <div className="w-10 h-10 bg-enzobay-blue/10 rounded-full flex items-center justify-center text-enzobay-blue flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-medium text-enzobay-brown">24/7 Support</h3>
-                <p className="text-sm text-enzobay-neutral-600">Dedicated customer service</p>
+              <polygon points="50,0 100,0 50,100 0,100" />
+            </svg>
+
+            <div className="pt-10 bg-white sm:pt-16 lg:pt-8 lg:pb-14">
+              <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8">
+                <div className="text-center lg:text-left">
+                  <span className="inline-block bg-enzobay-orange/10 text-enzobay-orange text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+                    Limited Time Sale • Up to 50% Off
+                  </span>
+                  <h1 className="text-4xl tracking-tight font-extrabold text-enzobay-brown sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl">
+                    <span className="block">Premium Quality</span>
+                    <span className="block text-enzobay-blue">Luxury Products</span>
+                  </h1>
+                  <p className="mt-3 text-base text-enzobay-neutral-600 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                    Discover our exclusive collection of luxury items at unbeatable prices. Refined elegance for the discerning customer.
+                  </p>
+                  <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                    <div className="rounded-md shadow">
+                      <Link
+                        to="/flash-sale"
+                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-enzobay-orange hover:bg-enzobay-orange-dark md:py-4 md:text-lg md:px-10"
+                      >
+                        Shop Sale
+                      </Link>
+                    </div>
+                    <div className="mt-3 sm:mt-0 sm:ml-3">
+                      <Link
+                        to="/products"
+                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-enzobay-blue bg-enzobay-blue-50 hover:bg-enzobay-blue-100 md:py-4 md:text-lg md:px-10"
+                      >
+                        Browse Products
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+          <img
+            className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
+            src="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+            alt="Shopping"
+          />
+        </div>
+      </section>
+      
+      {/* Featured Categories Showcase */}
+      <section className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-enzobay-brown">Shop by Category</h2>
+            <p className="mt-4 text-lg text-enzobay-neutral-600">Explore our wide range of premium products</p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+            {/* Category 1 */}
+            <Link to="/products?category=watches" className="group">
+              <div className="relative overflow-hidden rounded-lg aspect-square">
+                <img
+                  src="https://images.unsplash.com/photo-1633934542430-0905ccb5f050?q=80&w=1887&auto=format&fit=crop"
+                  alt="Watches"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-4">
+                  <h3 className="text-xl font-semibold text-white">Watches</h3>
+                  <span className="inline-flex items-center text-sm text-white/90 mt-1">
+                    Shop Now <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+            
+            {/* Category 2 */}
+            <Link to="/products?category=bags" className="group">
+              <div className="relative overflow-hidden rounded-lg aspect-square">
+                <img
+                  src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=2036&auto=format&fit=crop"
+                  alt="Bags"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-4">
+                  <h3 className="text-xl font-semibold text-white">Bags</h3>
+                  <span className="inline-flex items-center text-sm text-white/90 mt-1">
+                    Shop Now <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+            
+            {/* Category 3 */}
+            <Link to="/products?category=clothing" className="group">
+              <div className="relative overflow-hidden rounded-lg aspect-square">
+                <img
+                  src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1908&auto=format&fit=crop"
+                  alt="Clothing"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-4">
+                  <h3 className="text-xl font-semibold text-white">Clothing</h3>
+                  <span className="inline-flex items-center text-sm text-white/90 mt-1">
+                    Shop Now <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+            
+            {/* Category 4 */}
+            <Link to="/products?category=electronics" className="group">
+              <div className="relative overflow-hidden rounded-lg aspect-square">
+                <img
+                  src="https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=1964&auto=format&fit=crop"
+                  alt="Electronics"
+                  className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-4">
+                  <h3 className="text-xl font-semibold text-white">Electronics</h3>
+                  <span className="inline-flex items-center text-sm text-white/90 mt-1">
+                    Shop Now <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </div>
+          
+          <div className="text-center mt-10">
+            <Link
+              to="/categories"
+              className="inline-flex items-center text-enzobay-blue hover:text-enzobay-blue-dark font-medium"
+            >
+              View All Categories <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+      
+      {/* Benefits Section */}
+      <section className="bg-enzobay-neutral-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-y-8 gap-x-6 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Benefit 1 */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-enzobay-blue-50 mb-4">
+                <ShoppingBag className="h-8 w-8 text-enzobay-blue" />
+              </div>
+              <h3 className="text-lg font-semibold text-enzobay-brown">Free Shipping</h3>
+              <p className="mt-2 text-sm text-enzobay-neutral-600">On all orders over KSh 5,000</p>
+            </div>
+            
+            {/* Benefit 2 */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-enzobay-blue-50 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-enzobay-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-enzobay-brown">Quality Guarantee</h3>
+              <p className="mt-2 text-sm text-enzobay-neutral-600">100% authentic products</p>
+            </div>
+            
+            {/* Benefit 3 */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-enzobay-blue-50 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-enzobay-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-enzobay-brown">Secure Payments</h3>
+              <p className="mt-2 text-sm text-enzobay-neutral-600">Multiple payment methods</p>
+            </div>
+            
+            {/* Benefit 4 */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-enzobay-blue-50 mb-4">
+                <Clock className="h-8 w-8 text-enzobay-blue" />
+              </div>
+              <h3 className="text-lg font-semibold text-enzobay-brown">24/7 Support</h3>
+              <p className="mt-2 text-sm text-enzobay-neutral-600">Dedicated customer service</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Sale Banner */}
+      <section className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-2xl">
+            <div className="absolute inset-0">
+              <img 
+                src="https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1631&q=80" 
+                alt="Sale background" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-enzobay-blue/80 to-enzobay-blue/40"></div>
+            </div>
+            
+            <div className="relative py-16 px-6 sm:py-24 sm:px-12 lg:px-16">
+              <div className="max-w-lg">
+                <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                  Summer Sale
+                </h2>
+                <p className="mt-4 text-xl text-white">
+                  Get up to 50% off on selected items. Limited time offer.
+                </p>
+                <Link
+                  to="/flash-sale"
+                  className="mt-8 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-enzobay-blue bg-white hover:bg-enzobay-neutral-100"
+                >
+                  Shop the Sale <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

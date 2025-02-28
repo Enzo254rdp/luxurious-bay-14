@@ -133,6 +133,186 @@ export const PRODUCTS: Product[] = [
     reviews: 28,
     inStock: true,
     isFeatured: false
+  },
+  // Adding more affordable, everyday products
+  {
+    id: "7",
+    name: "Wireless Bluetooth Earbuds",
+    price: 3499,
+    currency: "KSH",
+    description: "High-quality sound with noise cancellation. Ergonomic design with long battery life.",
+    images: [
+      "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=1964&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1608156639585-b3a032e88587?q=80&w=2067&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    tags: ["wireless", "bluetooth", "audio"],
+    rating: 4.5,
+    reviews: 312,
+    inStock: true,
+    isFeatured: true,
+    discount: 15
+  },
+  {
+    id: "8",
+    name: "Cotton T-Shirt",
+    price: 999,
+    currency: "KSH",
+    description: "Premium soft cotton t-shirt with comfortable fit. Available in multiple colors.",
+    images: [
+      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=1854&auto=format&fit=crop"
+    ],
+    category: "clothing",
+    tags: ["cotton", "casual", "t-shirt"],
+    rating: 4.3,
+    reviews: 185,
+    inStock: true,
+    isFeatured: false,
+    discount: 5
+  },
+  {
+    id: "9",
+    name: "Running Shoes",
+    price: 4999,
+    currency: "KSH",
+    description: "Lightweight shoes with superior cushioning for maximum comfort during your run.",
+    images: [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=1964&auto=format&fit=crop"
+    ],
+    category: "footwear",
+    tags: ["sports", "running", "shoes"],
+    rating: 4.7,
+    reviews: 253,
+    inStock: true,
+    isFeatured: true,
+    isNew: true
+  },
+  {
+    id: "10",
+    name: "Smart LED TV - 43 inch",
+    price: 29999,
+    currency: "KSH",
+    description: "Full HD display with smart features. Connect to your favorite streaming services.",
+    images: [
+      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1601944177325-f8867652837f?q=80&w=1974&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    tags: ["tv", "smart", "led"],
+    rating: 4.6,
+    reviews: 128,
+    inStock: true,
+    isFeatured: true,
+    discount: 8
+  },
+  {
+    id: "11",
+    name: "Kitchen Blender",
+    price: 4299,
+    currency: "KSH",
+    description: "Powerful motor with multiple speed settings. Perfect for smoothies and food preparation.",
+    images: [
+      "https://images.unsplash.com/photo-1570222094114-d054a817e56b?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1578677972412-ffb5a35a4537?q=80&w=2069&auto=format&fit=crop"
+    ],
+    category: "kitchen",
+    tags: ["appliance", "blender", "home"],
+    rating: 4.2,
+    reviews: 96,
+    inStock: true,
+    isFeatured: false,
+    isNew: true
+  },
+  {
+    id: "12",
+    name: "Smartphone Case",
+    price: 899,
+    currency: "KSH",
+    description: "Durable protection with slim design. Compatible with latest phone models.",
+    images: [
+      "https://images.unsplash.com/photo-1592890288564-76628a30a657?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1584435405303-fa1e9172a7b8?q=80&w=1824&auto=format&fit=crop"
+    ],
+    category: "mobile-accessories",
+    tags: ["case", "protection", "smartphone"],
+    rating: 4.4,
+    reviews: 210,
+    inStock: true,
+    isFeatured: false,
+    discount: 20
+  },
+  {
+    id: "13",
+    name: "Office Desk Chair",
+    price: 11999,
+    currency: "KSH",
+    description: "Ergonomic design with adjustable height and lumbar support for all-day comfort.",
+    images: [
+      "https://images.unsplash.com/photo-1505843490701-5be5d76b3f09?q=80&w=1887&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1589364222378-4dc75a6dc0a7?q=80&w=1954&auto=format&fit=crop"
+    ],
+    category: "furniture",
+    tags: ["office", "chair", "ergonomic"],
+    rating: 4.5,
+    reviews: 75,
+    inStock: true,
+    isFeatured: true
+  },
+  {
+    id: "14",
+    name: "Fitness Tracker",
+    price: 3499,
+    currency: "KSH",
+    description: "Track your steps, heart rate, and sleep patterns. Waterproof with long battery life.",
+    images: [
+      "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?q=80&w=2088&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1614043599674-dafd63410d34?q=80&w=1770&auto=format&fit=crop"
+    ],
+    category: "electronics",
+    tags: ["fitness", "tracker", "wearable"],
+    rating: 4.3,
+    reviews: 123,
+    inStock: true,
+    isFeatured: false,
+    discount: 12
+  },
+  {
+    id: "15",
+    name: "Baby Stroller",
+    price: 12599,
+    currency: "KSH",
+    description: "Lightweight and foldable design. Multiple position settings with ample storage space.",
+    images: [
+      "https://images.unsplash.com/photo-1586982643126-83f544ed6ed3?q=80&w=1889&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1590895178913-ce1e241ec8ac?q=80&w=1965&auto=format&fit=crop"
+    ],
+    category: "baby",
+    tags: ["stroller", "baby", "travel"],
+    rating: 4.7,
+    reviews: 89,
+    inStock: true,
+    isFeatured: false,
+    isNew: true
+  },
+  {
+    id: "16",
+    name: "Laptop Backpack",
+    price: 2999,
+    currency: "KSH",
+    description: "Waterproof with padded laptop compartment. Multiple pockets for organization.",
+    images: [
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=1887&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1581605405669-fcdf81165afa?q=80&w=1587&auto=format&fit=crop"
+    ],
+    category: "bags",
+    tags: ["backpack", "laptop", "travel"],
+    rating: 4.5,
+    reviews: 142,
+    inStock: true,
+    isFeatured: true,
+    discount: 10
   }
 ];
 
@@ -160,5 +340,53 @@ export const CATEGORIES: Category[] = [
     name: "Clothing",
     description: "Premium fabrics and exclusive designs",
     image: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=1908&auto=format&fit=crop"
+  },
+  {
+    id: "5",
+    name: "Electronics",
+    description: "Latest gadgets and smart devices",
+    image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?q=80&w=1964&auto=format&fit=crop"
+  },
+  {
+    id: "6",
+    name: "Footwear",
+    description: "Comfortable and stylish shoes for all occasions",
+    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    id: "7",
+    name: "Home & Kitchen",
+    description: "Essentials for your living space",
+    image: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    id: "8",
+    name: "Furniture",
+    description: "Quality furniture for home and office",
+    image: "https://images.unsplash.com/photo-1505843490701-5be5d76b3f09?q=80&w=1887&auto=format&fit=crop"
+  },
+  {
+    id: "9",
+    name: "Beauty & Personal Care",
+    description: "Skincare, makeup and personal grooming",
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2080&auto=format&fit=crop"
+  },
+  {
+    id: "10",
+    name: "Baby Products",
+    description: "Everything you need for your little ones",
+    image: "https://images.unsplash.com/photo-1586982643126-83f544ed6ed3?q=80&w=1889&auto=format&fit=crop"
+  },
+  {
+    id: "11",
+    name: "Mobile Accessories",
+    description: "Enhance your smartphone experience",
+    image: "https://images.unsplash.com/photo-1592890288564-76628a30a657?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    id: "12",
+    name: "Sports & Fitness",
+    description: "Equipment and gear for active lifestyles",
+    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?q=80&w=2088&auto=format&fit=crop"
   }
 ];

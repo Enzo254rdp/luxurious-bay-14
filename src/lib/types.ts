@@ -14,6 +14,15 @@ export interface Product {
   isFeatured?: boolean;
   isNew?: boolean;
   discount?: number;
+  brand?: string;
+  model?: string;
+  material?: string;
+  dimensions?: string;
+  weight?: string;
+  options?: {
+    colors?: string[];
+    sizes?: string[];
+  };
 }
 
 export interface CartItem extends Product {
@@ -45,7 +54,15 @@ export const PRODUCTS: Product[] = [
     reviews: 52,
     inStock: true,
     isFeatured: true,
-    isNew: true
+    isNew: true,
+    brand: "Audemars Piguet",
+    model: "Royal Oak",
+    material: "18k Gold, Diamond",
+    dimensions: "41mm x 10.5mm",
+    weight: "210g",
+    options: {
+      colors: ["gold", "rose-gold", "white-gold"]
+    }
   },
   {
     id: "2",
@@ -62,7 +79,15 @@ export const PRODUCTS: Product[] = [
     rating: 4.7,
     reviews: 36,
     inStock: true,
-    isFeatured: true
+    isFeatured: true,
+    brand: "Hermès",
+    model: "Birkin",
+    material: "Premium Italian Leather",
+    dimensions: "40cm x 30cm x 20cm",
+    weight: "1.2kg",
+    options: {
+      colors: ["black", "brown", "tan"]
+    }
   },
   {
     id: "3",
@@ -80,7 +105,15 @@ export const PRODUCTS: Product[] = [
     reviews: 24,
     inStock: true,
     isFeatured: true,
-    discount: 10
+    discount: 10,
+    brand: "Ray-Ban",
+    model: "Aviator Premium",
+    material: "Titanium, Polarized Glass",
+    dimensions: "Standard Size",
+    weight: "30g",
+    options: {
+      colors: ["black", "gold", "silver"]
+    }
   },
   {
     id: "4",
@@ -98,7 +131,14 @@ export const PRODUCTS: Product[] = [
     reviews: 19,
     inStock: true,
     isFeatured: false,
-    isNew: true
+    isNew: true,
+    brand: "Versace",
+    model: "Moonlight Collection",
+    material: "100% Silk, Hand-embroidered",
+    dimensions: "Made to measure",
+    options: {
+      sizes: ["XS", "S", "M", "L", "XL"]
+    }
   },
   {
     id: "5",
@@ -115,7 +155,12 @@ export const PRODUCTS: Product[] = [
     rating: 4.6,
     reviews: 14,
     inStock: true,
-    isFeatured: true
+    isFeatured: true,
+    brand: "Mont Blanc",
+    model: "Meisterstück",
+    material: "Italian Marble, Gold-plated nib",
+    dimensions: "14.5cm length, 1.2cm diameter",
+    weight: "45g"
   },
   {
     id: "6",
@@ -132,7 +177,12 @@ export const PRODUCTS: Product[] = [
     rating: 4.8,
     reviews: 28,
     inStock: true,
-    isFeatured: false
+    isFeatured: false,
+    brand: "Waterford",
+    model: "Lismore Collection",
+    material: "Hand-cut Crystal",
+    dimensions: "Decanter: 27cm height, Glasses: 9.5cm height",
+    weight: "Set: 3.2kg"
   },
   // Adding more affordable, everyday products
   {
@@ -151,7 +201,12 @@ export const PRODUCTS: Product[] = [
     reviews: 312,
     inStock: true,
     isFeatured: true,
-    discount: 15
+    discount: 15,
+    brand: "Sony",
+    model: "WF-1000XM4",
+    material: "Premium Plastic, Silicone tips",
+    dimensions: "Case: 6.5cm x 4.5cm x 2.8cm",
+    weight: "7.3g per earbud, 41g case"
   },
   {
     id: "8",
@@ -169,7 +224,14 @@ export const PRODUCTS: Product[] = [
     reviews: 185,
     inStock: true,
     isFeatured: false,
-    discount: 5
+    discount: 5,
+    brand: "EnzoBay Essentials",
+    model: "Comfort Fit",
+    material: "100% Egyptian Cotton",
+    options: {
+      colors: ["white", "black", "navy", "gray", "red"],
+      sizes: ["S", "M", "L", "XL", "XXL"]
+    }
   },
   {
     id: "9",
@@ -187,7 +249,15 @@ export const PRODUCTS: Product[] = [
     reviews: 253,
     inStock: true,
     isFeatured: true,
-    isNew: true
+    isNew: true,
+    brand: "Nike",
+    model: "Air Zoom Pegasus",
+    material: "Mesh, Synthetic leather, Rubber sole",
+    weight: "285g per shoe",
+    options: {
+      colors: ["black/white", "blue/orange", "gray/green"],
+      sizes: ["UK 6", "UK 7", "UK 8", "UK 9", "UK 10", "UK 11"]
+    }
   },
   {
     id: "10",
@@ -205,7 +275,12 @@ export const PRODUCTS: Product[] = [
     reviews: 128,
     inStock: true,
     isFeatured: true,
-    discount: 8
+    discount: 8,
+    brand: "Samsung",
+    model: "Crystal UHD",
+    material: "Metal, Plastic, Glass",
+    dimensions: "96.39cm x 55.89cm x 6.05cm",
+    weight: "8.7kg"
   },
   {
     id: "11",
@@ -223,7 +298,12 @@ export const PRODUCTS: Product[] = [
     reviews: 96,
     inStock: true,
     isFeatured: false,
-    isNew: true
+    isNew: true,
+    brand: "Vitamix",
+    model: "Pro Series 750",
+    material: "Stainless Steel, BPA-free plastic",
+    dimensions: "19.6cm x 19.6cm x 44.2cm",
+    weight: "5.7kg"
   },
   {
     id: "12",
@@ -241,7 +321,15 @@ export const PRODUCTS: Product[] = [
     reviews: 210,
     inStock: true,
     isFeatured: false,
-    discount: 20
+    discount: 20,
+    brand: "Spigen",
+    model: "Tough Armor",
+    material: "TPU, Polycarbonate",
+    dimensions: "Varies by phone model",
+    weight: "42g",
+    options: {
+      colors: ["black", "navy blue", "red"]
+    }
   },
   {
     id: "13",
@@ -258,7 +346,15 @@ export const PRODUCTS: Product[] = [
     rating: 4.5,
     reviews: 75,
     inStock: true,
-    isFeatured: true
+    isFeatured: true,
+    brand: "Herman Miller",
+    model: "Aeron",
+    material: "Mesh, Aluminum frame",
+    dimensions: "Height: 104cm, Width: 68cm, Depth: 66cm",
+    weight: "18kg",
+    options: {
+      colors: ["black", "graphite", "mineral"]
+    }
   },
   {
     id: "14",
@@ -276,7 +372,15 @@ export const PRODUCTS: Product[] = [
     reviews: 123,
     inStock: true,
     isFeatured: false,
-    discount: 12
+    discount: 12,
+    brand: "Fitbit",
+    model: "Charge 5",
+    material: "Silicone, aluminum housing",
+    dimensions: "36.78mm x 22.79mm x 11.2mm",
+    weight: "29g",
+    options: {
+      colors: ["black", "lunar white", "steel blue"]
+    }
   },
   {
     id: "15",
@@ -294,7 +398,12 @@ export const PRODUCTS: Product[] = [
     reviews: 89,
     inStock: true,
     isFeatured: false,
-    isNew: true
+    isNew: true,
+    brand: "Uppababy",
+    model: "Vista V2",
+    material: "Aluminum frame, premium fabrics",
+    dimensions: "Unfolded: 91.4cm x 65.3cm x 101.6cm",
+    weight: "12.4kg"
   },
   {
     id: "16",
@@ -312,7 +421,15 @@ export const PRODUCTS: Product[] = [
     reviews: 142,
     inStock: true,
     isFeatured: true,
-    discount: 10
+    discount: 10,
+    brand: "North Face",
+    model: "Surge",
+    material: "Nylon, polyester",
+    dimensions: "50cm x 33cm x 18cm",
+    weight: "1.4kg",
+    options: {
+      colors: ["black", "navy", "gray"]
+    }
   }
 ];
 

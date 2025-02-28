@@ -5,18 +5,28 @@ import ProductDetail from "../components/ProductDetail";
 import { PRODUCTS, Product } from "../lib/types";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useRecentlyViewedStore } from "../lib/store";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Simulate API fetch
     setLoading(true);
+    setError(null);
+    
     setTimeout(() => {
       const foundProduct = PRODUCTS.find(p => p.id === id) || null;
-      setProduct(foundProduct);
+      
+      if (foundProduct) {
+        setProduct(foundProduct);
+      } else {
+        setError("Product not found");
+      }
+      
       setLoading(false);
     }, 300);
   }, [id]);
@@ -33,7 +43,7 @@ export default function ProductPage() {
     );
   }
 
-  if (!product) {
+  if (error || !product) {
     return (
       <div>
         <Navbar />

@@ -1,7 +1,13 @@
 
-import { useState } from "react";
-import { Heart, ShoppingBag, Check, Star, ChevronDown, ChevronUp, Share2, ShieldCheck, Truck, RotateCw } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Heart, ShoppingBag, Check, Star, ChevronDown, ChevronUp, Share2, ShieldCheck, Truck, RotateCw, Maximize } from "lucide-react";
 import { Product } from "../lib/types";
+import { formatPrice } from "../lib/utils";
+import { useRecentlyViewedStore, useCartStore, useWishlistStore } from "../lib/store";
+import WishlistButton from "./WishlistButton";
+import ImageModal from "./ImageModal";
+import SimilarProducts from "./SimilarProducts";
+import RecentlyViewed from "./RecentlyViewed";
 
 interface ProductDetailProps {
   product: Product;
@@ -12,15 +18,18 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [expandedSection, setExpandedSection] = useState<string | null>("description");
   const [activeTab, setActiveTab] = useState("details");
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
-  };
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  
+  const { addItem } = useCartStore();
+  const { addItem: addToRecentlyViewed } = useRecentlyViewedStore();
+  const { isInWishlist, addItem: addToWishlist, removeItem: removeFromWishlist } = useWishlistStore();
+  
+  // Add to recently viewed
+  useEffect(() => {
+    if (product) {
+      addToRecentlyViewed(product);
+    }
+  }, [product, addToRecentlyViewed]);
 
   const incrementQuantity = () => {
     setQuantity(prev => prev + 1);
@@ -33,10 +42,27 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
+  
+  const handleAddToCart = () => {
+    addItem(product, quantity);
+  };
+  
+  const toggleWishlist = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+  
+  const openImageModal = (index: number) => {
+    setSelectedImage(index);
+    setIsImageModalOpen(true);
+  };
 
   return (
     <div className="bg-white animate-fade-in">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         {/* Breadcrumbs */}
         <nav className="mb-6 text-sm text-enzobay-neutral-500">
           <ol className="flex items-center space-x-1">
@@ -62,35 +88,48 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </ol>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Product Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative overflow-hidden rounded-xl border border-enzobay-neutral-200 bg-white">
+            <div className="relative overflow-hidden rounded-lg border border-enzobay-neutral-200 bg-white group">
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-auto object-contain aspect-square"
+                className="w-full h-auto max-h-[400px] object-contain p-4 cursor-zoom-in"
+                onClick={() => openImageModal(selectedImage)}
               />
               {product.discount && (
                 <div className="absolute top-4 left-4 gold-gradient text-white text-sm font-bold px-3 py-1.5 rounded-full">
                   {product.discount}% OFF
                 </div>
               )}
-              <button 
-                className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-enzobay-neutral-100 transition-colors"
-                aria-label="Share product"
-              >
-                <Share2 className="h-5 w-5 text-enzobay-neutral-700" />
-              </button>
+              <div className="absolute top-4 right-4 flex space-x-2">
+                <button 
+                  className="bg-white p-2 rounded-full shadow-md hover:bg-enzobay-neutral-100 transition-colors"
+                  onClick={() => openImageModal(selectedImage)}
+                  aria-label="View full screen"
+                >
+                  <Maximize className="h-5 w-5 text-enzobay-neutral-700" />
+                </button>
+                <WishlistButton product={product} />
+              </div>
+              
+              {/* Fullscreen hint */}
+              <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="bg-black/70 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2">
+                  <Maximize className="h-4 w-4" />
+                  Click to enlarge
+                </div>
+              </div>
             </div>
             
             {/* Thumbnail Gallery */}
-            <div className="flex gap-3 overflow-x-auto pb-2 snap-x">
+            <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
               {product.images.map((img, index) => (
                 <button
                   key={index}
-                  className={`relative min-w-[70px] w-20 aspect-square rounded-md overflow-hidden border snap-start ${
+                  className={`relative min-w-[60px] w-16 aspect-square rounded-md overflow-hidden border snap-start ${
                     selectedImage === index
                       ? "border-enzobay-orange ring-2 ring-enzobay-orange/20"
                       : "border-enzobay-neutral-200 hover:border-enzobay-neutral-300"
@@ -107,44 +146,53 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Product Benefits */}
-            <div className="grid grid-cols-3 gap-3 mt-4">
-              <div className="flex flex-col items-center text-center p-3 rounded-lg border border-enzobay-neutral-200">
-                <Truck className="h-5 w-5 text-enzobay-blue mb-2" />
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="flex flex-col items-center text-center p-2 rounded-lg border border-enzobay-neutral-200">
+                <Truck className="h-4 w-4 text-enzobay-blue mb-1" />
                 <span className="text-xs font-medium text-enzobay-neutral-700">Free Shipping</span>
                 <span className="text-xs text-enzobay-neutral-500">On orders over KSH 5,000</span>
               </div>
-              <div className="flex flex-col items-center text-center p-3 rounded-lg border border-enzobay-neutral-200">
-                <RotateCw className="h-5 w-5 text-enzobay-blue mb-2" />
+              <div className="flex flex-col items-center text-center p-2 rounded-lg border border-enzobay-neutral-200">
+                <RotateCw className="h-4 w-4 text-enzobay-blue mb-1" />
                 <span className="text-xs font-medium text-enzobay-neutral-700">Easy Returns</span>
                 <span className="text-xs text-enzobay-neutral-500">30-day return policy</span>
               </div>
-              <div className="flex flex-col items-center text-center p-3 rounded-lg border border-enzobay-neutral-200">
-                <ShieldCheck className="h-5 w-5 text-enzobay-blue mb-2" />
-                <span className="text-xs font-medium text-enzobay-neutral-700">Quality Guarantee</span>
-                <span className="text-xs text-enzobay-neutral-500">Authentic products</span>
+              <div className="flex flex-col items-center text-center p-2 rounded-lg border border-enzobay-neutral-200">
+                <ShieldCheck className="h-4 w-4 text-enzobay-blue mb-1" />
+                <span className="text-xs font-medium text-enzobay-neutral-700">Authenticity</span>
+                <span className="text-xs text-enzobay-neutral-500">Guaranteed</span>
               </div>
             </div>
           </div>
           
           {/* Right Column - Product Info */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Badges */}
-            <div className="flex gap-2 mb-4">
+            <div className="flex flex-wrap gap-2">
               {product.isNew && (
                 <span className="blue-gradient text-white text-xs font-medium px-3 py-1 rounded-full">
                   New Arrival
                 </span>
               )}
-              {product.inStock && (
+              {product.inStock ? (
                 <span className="bg-green-100 text-green-800 text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
                   <Check className="h-3 w-3" /> In Stock
+                </span>
+              ) : (
+                <span className="bg-red-100 text-red-800 text-xs font-medium px-3 py-1 rounded-full">
+                  Out of Stock
+                </span>
+              )}
+              {product.brand && (
+                <span className="bg-enzobay-neutral-100 text-enzobay-neutral-800 text-xs font-medium px-3 py-1 rounded-full">
+                  {product.brand}
                 </span>
               )}
             </div>
             
             {/* Product Title & Rating */}
             <div className="space-y-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-enzobay-brown">
+              <h1 className="text-xl md:text-2xl font-bold text-enzobay-brown">
                 {product.name}
               </h1>
               
@@ -153,7 +201,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-5 w-5 ${
+                      className={`h-4 w-4 ${
                         i < Math.floor(product.rating)
                           ? "text-enzobay-orange fill-enzobay-orange"
                           : "text-enzobay-neutral-300"
@@ -161,7 +209,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     />
                   ))}
                 </div>
-                <span className="text-enzobay-neutral-600">
+                <span className="text-sm text-enzobay-neutral-600">
                   {product.rating} ({product.reviews} reviews)
                 </span>
               </div>
@@ -169,11 +217,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             
             {/* Price */}
             <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-enzobay-brown mr-3">
+              <span className="text-2xl md:text-3xl font-bold text-enzobay-brown mr-3">
                 {formatPrice(product.price)}
               </span>
               {product.discount && (
-                <span className="text-lg text-enzobay-neutral-500 line-through">
+                <span className="text-base md:text-lg text-enzobay-neutral-500 line-through">
                   {formatPrice(product.price * (1 + product.discount / 100))}
                 </span>
               )}
@@ -185,22 +233,22 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
             
             {/* Short Description */}
-            <p className="text-enzobay-neutral-600">
+            <p className="text-sm md:text-base text-enzobay-neutral-600">
               {product.description.split('.')[0]}.
             </p>
             
             {/* Color/Variant Options (if available) */}
             {product.options && product.options.colors && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-enzobay-neutral-700">Color:</span>
-                  <span className="text-sm text-enzobay-blue">Color Guide</span>
+                  <span className="text-xs text-enzobay-blue cursor-pointer">Color Guide</span>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   {product.options.colors.map((color, index) => (
                     <button
                       key={index}
-                      className="w-10 h-10 rounded-full border-2 border-white outline outline-1 outline-enzobay-neutral-200 hover:outline-enzobay-blue transition-colors focus:outline-offset-2 focus:outline-enzobay-blue"
+                      className="w-8 h-8 rounded-full border-2 border-white outline outline-1 outline-enzobay-neutral-200 hover:outline-enzobay-blue transition-colors focus:outline-offset-2 focus:outline-enzobay-blue"
                       style={{ backgroundColor: color }}
                       aria-label={`Select ${color} color`}
                     ></button>
@@ -211,16 +259,16 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             
             {/* Size Options (if available) */}
             {product.options && product.options.sizes && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-enzobay-neutral-700">Size:</span>
-                  <span className="text-sm text-enzobay-blue">Size Guide</span>
+                  <span className="text-xs text-enzobay-blue cursor-pointer">Size Guide</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {product.options.sizes.map((size, index) => (
                     <button
                       key={index}
-                      className="min-w-[40px] h-10 px-3 rounded-md border border-enzobay-neutral-200 hover:border-enzobay-blue hover:bg-enzobay-blue/5 transition-colors focus:outline-none focus:ring-2 focus:ring-enzobay-blue"
+                      className="min-w-[36px] h-9 px-2 rounded-md border border-enzobay-neutral-200 hover:border-enzobay-blue hover:bg-enzobay-blue/5 transition-colors focus:outline-none focus:ring-2 focus:ring-enzobay-blue text-sm"
                     >
                       {size}
                     </button>
@@ -230,12 +278,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             )}
             
             {/* Quantity Selector */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <label className="text-sm font-medium text-enzobay-neutral-700">Quantity:</label>
               <div className="flex items-center">
                 <button
                   onClick={decrementQuantity}
-                  className="h-10 w-10 border border-enzobay-neutral-300 rounded-l-md flex items-center justify-center transition-colors hover:bg-enzobay-neutral-100"
+                  className="h-9 w-9 border border-enzobay-neutral-300 rounded-l-md flex items-center justify-center transition-colors hover:bg-enzobay-neutral-100"
                 >
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -243,12 +291,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="h-10 w-16 border-y border-enzobay-neutral-300 text-center"
+                  className="h-9 w-14 border-y border-enzobay-neutral-300 text-center text-sm"
                   min="1"
                 />
                 <button
                   onClick={incrementQuantity}
-                  className="h-10 w-10 border border-enzobay-neutral-300 rounded-r-md flex items-center justify-center transition-colors hover:bg-enzobay-neutral-100"
+                  className="h-9 w-9 border border-enzobay-neutral-300 rounded-r-md flex items-center justify-center transition-colors hover:bg-enzobay-neutral-100"
                 >
                   <ChevronUp className="h-4 w-4" />
                 </button>
@@ -256,19 +304,30 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
             
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button className="sm:flex-1 btn-primary py-3 flex items-center justify-center gap-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button 
+                onClick={handleAddToCart}
+                className="sm:flex-1 btn-primary py-2.5 flex items-center justify-center gap-2"
+              >
                 <ShoppingBag className="h-5 w-5" />
                 Add to Cart
               </button>
-              <button className="border border-enzobay-neutral-300 text-enzobay-brown rounded-md flex items-center justify-center gap-2 py-3 px-6 hover:bg-enzobay-neutral-100 transition-colors">
-                <Heart className="h-5 w-5" />
-                Wishlist
+              
+              <button 
+                onClick={toggleWishlist}
+                className={`border ${
+                  isInWishlist(product.id) 
+                    ? 'border-red-300 bg-red-50 text-red-500 hover:bg-red-100' 
+                    : 'border-enzobay-neutral-300 text-enzobay-brown hover:bg-enzobay-neutral-100'
+                } rounded-md flex items-center justify-center gap-2 py-2.5 px-6 transition-colors`}
+              >
+                <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-red-500' : ''}`} />
+                {isInWishlist(product.id) ? 'Saved' : 'Wishlist'}
               </button>
             </div>
             
             {/* Estimated Delivery */}
-            <div className="flex items-start gap-3 p-4 bg-enzobay-neutral-50 rounded-lg">
+            <div className="flex items-start gap-3 p-3 bg-enzobay-neutral-50 rounded-lg">
               <Truck className="h-5 w-5 text-enzobay-blue flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-enzobay-brown">Estimated Delivery:</p>
@@ -279,16 +338,38 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                 </p>
               </div>
             </div>
+            
+            {/* Specs Summary */}
+            <div className="border-t border-b border-enzobay-neutral-200 py-3 space-y-2 text-sm">
+              {product.brand && (
+                <div className="flex">
+                  <span className="text-enzobay-neutral-600 w-24">Brand:</span>
+                  <span className="text-enzobay-brown font-medium">{product.brand}</span>
+                </div>
+              )}
+              {product.model && (
+                <div className="flex">
+                  <span className="text-enzobay-neutral-600 w-24">Model:</span>
+                  <span className="text-enzobay-brown font-medium">{product.model}</span>
+                </div>
+              )}
+              {product.material && (
+                <div className="flex">
+                  <span className="text-enzobay-neutral-600 w-24">Material:</span>
+                  <span className="text-enzobay-brown font-medium">{product.material}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
         {/* Product Tabs */}
-        <div className="mt-12 border-t border-enzobay-neutral-200 pt-8">
+        <div className="mt-8 border-t border-enzobay-neutral-200 pt-6">
           <div className="border-b border-enzobay-neutral-200">
-            <div className="flex space-x-8">
+            <div className="flex space-x-6 overflow-x-auto scrollbar-none">
               <button
                 onClick={() => setActiveTab("details")}
-                className={`pb-4 text-sm font-medium ${
+                className={`pb-3 text-sm font-medium whitespace-nowrap ${
                   activeTab === "details"
                     ? "text-enzobay-blue border-b-2 border-enzobay-blue"
                     : "text-enzobay-neutral-600 hover:text-enzobay-brown"
@@ -298,7 +379,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </button>
               <button
                 onClick={() => setActiveTab("specifications")}
-                className={`pb-4 text-sm font-medium ${
+                className={`pb-3 text-sm font-medium whitespace-nowrap ${
                   activeTab === "specifications"
                     ? "text-enzobay-blue border-b-2 border-enzobay-blue"
                     : "text-enzobay-neutral-600 hover:text-enzobay-brown"
@@ -308,7 +389,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </button>
               <button
                 onClick={() => setActiveTab("shipping")}
-                className={`pb-4 text-sm font-medium ${
+                className={`pb-3 text-sm font-medium whitespace-nowrap ${
                   activeTab === "shipping"
                     ? "text-enzobay-blue border-b-2 border-enzobay-blue"
                     : "text-enzobay-neutral-600 hover:text-enzobay-brown"
@@ -318,7 +399,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </button>
               <button
                 onClick={() => setActiveTab("reviews")}
-                className={`pb-4 text-sm font-medium ${
+                className={`pb-3 text-sm font-medium whitespace-nowrap ${
                   activeTab === "reviews"
                     ? "text-enzobay-blue border-b-2 border-enzobay-blue"
                     : "text-enzobay-neutral-600 hover:text-enzobay-brown"
@@ -350,24 +431,24 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     <table className="w-full text-sm">
                       <tbody className="divide-y divide-enzobay-neutral-200">
                         <tr>
-                          <td className="py-3 text-enzobay-neutral-600 font-medium">Brand</td>
-                          <td className="py-3 text-enzobay-brown">{product.brand || "EnzoBay"}</td>
+                          <td className="py-2 text-enzobay-neutral-600 font-medium">Brand</td>
+                          <td className="py-2 text-enzobay-brown">{product.brand || "EnzoBay"}</td>
                         </tr>
                         <tr>
-                          <td className="py-3 text-enzobay-neutral-600 font-medium">Model</td>
-                          <td className="py-3 text-enzobay-brown">{product.model || "Premium"}</td>
+                          <td className="py-2 text-enzobay-neutral-600 font-medium">Model</td>
+                          <td className="py-2 text-enzobay-brown">{product.model || "Premium"}</td>
                         </tr>
                         <tr>
-                          <td className="py-3 text-enzobay-neutral-600 font-medium">Material</td>
-                          <td className="py-3 text-enzobay-brown">{product.material || "Premium Quality"}</td>
+                          <td className="py-2 text-enzobay-neutral-600 font-medium">Material</td>
+                          <td className="py-2 text-enzobay-brown">{product.material || "Premium Quality"}</td>
                         </tr>
                         <tr>
-                          <td className="py-3 text-enzobay-neutral-600 font-medium">Dimensions</td>
-                          <td className="py-3 text-enzobay-brown">{product.dimensions || "Standard Size"}</td>
+                          <td className="py-2 text-enzobay-neutral-600 font-medium">Dimensions</td>
+                          <td className="py-2 text-enzobay-brown">{product.dimensions || "Standard Size"}</td>
                         </tr>
                         <tr>
-                          <td className="py-3 text-enzobay-neutral-600 font-medium">Weight</td>
-                          <td className="py-3 text-enzobay-brown">{product.weight || "Standard Weight"}</td>
+                          <td className="py-2 text-enzobay-neutral-600 font-medium">Weight</td>
+                          <td className="py-2 text-enzobay-brown">{product.weight || "Standard Weight"}</td>
                         </tr>
                       </tbody>
                     </table>
@@ -548,6 +629,20 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </div>
       </div>
+      
+      {/* Similar Products Section */}
+      <SimilarProducts product={product} />
+      
+      {/* Recently Viewed Section */}
+      <RecentlyViewed />
+      
+      {/* Image Modal for fullscreen view */}
+      <ImageModal 
+        images={product.images}
+        initialIndex={selectedImage}
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+      />
     </div>
   );
 }

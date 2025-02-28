@@ -6,7 +6,7 @@ import FeaturedProducts from "../components/FeaturedProducts";
 import Footer from "../components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { PRODUCTS, CATEGORIES } from "../lib/types";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 

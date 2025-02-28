@@ -1,270 +1,380 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCartStore } from "../lib/store";
 import { formatPrice } from "../lib/utils";
-import { Minus, Plus, ShoppingBag, Trash2, X, ArrowRight, ShieldCheck } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ChevronRight, Trash, Heart, Plus, Minus, ShoppingBag, ArrowRight, CreditCard, Shield, Truck } from "lucide-react";
+import { PRODUCTS } from "../lib/types";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, getCartTotal, getItemCount, clearCart } = useCartStore();
+  const { items, updateQuantity, removeItem, clearCart, getCartTotal } = useCartStore();
+  const { toast } = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
-  const [discountApplied, setDiscountApplied] = useState(false);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [discount, setDiscount] = useState(0);
   
-  const isEmpty = items.length === 0;
-  const cartTotal = getCartTotal();
-  const shippingCost = cartTotal > 5000 ? 0 : 500;
-  const discountAmount = discountApplied ? cartTotal * 0.1 : 0;
-  const finalTotal = cartTotal + shippingCost - discountAmount;
+  const handleQuantityChange = (productId: string, quantity: number) => {
+    if (quantity < 1) return;
+    
+    updateQuantity(productId, quantity);
+  };
   
-  const applyCoupon = () => {
-    if (couponCode.toLowerCase() === "discount10") {
-      setDiscountApplied(true);
+  const handleRemoveItem = (productId: string, productName: string) => {
+    removeItem(productId);
+    
+    toast({
+      title: "Item removed",
+      description: `${productName} has been removed from your cart`,
+    });
+  };
+  
+  const handleClearCart = () => {
+    clearCart();
+    
+    toast({
+      title: "Cart cleared",
+      description: "All items have been removed from your cart",
+    });
+  };
+  
+  const handleApplyCoupon = () => {
+    if (!couponCode) {
+      setCouponError("Please enter a coupon code");
+      return;
     }
+    
+    setIsApplyingCoupon(true);
+    setCouponError("");
+    
+    // Simulate API call to validate coupon
+    setTimeout(() => {
+      if (couponCode.toLowerCase() === "enzobay10") {
+        setDiscount(10);
+        toast({
+          title: "Coupon applied",
+          description: "10% discount has been applied to your order",
+        });
+      } else if (couponCode.toLowerCase() === "enzobay20") {
+        setDiscount(20);
+        toast({
+          title: "Coupon applied",
+          description: "20% discount has been applied to your order",
+        });
+      } else {
+        setCouponError("Invalid coupon code");
+      }
+      
+      setIsApplyingCoupon(false);
+    }, 1000);
   };
   
-  const handleCheckout = () => {
-    setIsLoading(true);
-    // Simulate API call delay
-    setTimeout(() => {
-      navigate("/checkout");
-      setIsLoading(false);
-    }, 800);
+  const handleProceedToCheckout = () => {
+    navigate("/checkout");
   };
+  
+  // Calculate cart totals
+  const subtotal = getCartTotal();
+  const shippingEstimate = subtotal > 5000 ? 0 : 500; // Free shipping for orders over 5000
+  const discountAmount = discount > 0 ? (subtotal * discount / 100) : 0;
+  const tax = Math.round((subtotal - discountAmount) * 0.16); // 16% VAT
+  const total = subtotal - discountAmount + shippingEstimate + tax;
   
   return (
-    <div className="bg-enzobay-neutral-50 min-h-screen flex flex-col">
+    <div className="min-h-screen bg-enzobay-neutral-50 flex flex-col">
       <Navbar />
       
       <main className="flex-grow py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-baseline justify-between border-b border-enzobay-neutral-200 pb-6">
+          {/* Breadcrumbs */}
+          <nav className="flex mb-6" aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-2 text-sm text-enzobay-neutral-500">
+              <li>
+                <Link to="/" className="hover:text-enzobay-blue">Home</Link>
+              </li>
+              <li>
+                <span className="mx-2">
+                  <ChevronRight className="h-4 w-4" />
+                </span>
+              </li>
+              <li className="text-enzobay-neutral-800 font-medium">Shopping Cart</li>
+            </ol>
+          </nav>
+          
+          <div className="mb-8 flex items-center justify-between">
             <h1 className="text-2xl font-bold tracking-tight text-enzobay-brown sm:text-3xl">
               Shopping Cart
             </h1>
-            <Link to="/products" className="text-sm font-medium text-enzobay-blue hover:text-enzobay-blue-dark">
-              Continue Shopping<span aria-hidden="true"> &rarr;</span>
+            <Link 
+              to="/products" 
+              className="text-enzobay-blue hover:text-enzobay-blue-dark flex items-center text-sm font-medium"
+            >
+              Continue Shopping <ArrowRight className="h-4 w-4 ml-1" />
             </Link>
           </div>
+          
+          {items.length > 0 ? (
+            <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start xl:gap-x-16">
+              {/* Cart items */}
+              <section aria-labelledby="cart-heading" className="lg:col-span-8">
+                <h2 id="cart-heading" className="sr-only">
+                  Items in your shopping cart
+                </h2>
 
-          {isEmpty ? (
-            <div className="py-16 px-4 text-center">
-              <ShoppingBag className="mx-auto h-16 w-16 text-enzobay-neutral-400" />
-              <h2 className="mt-6 text-xl font-medium text-enzobay-brown">Your cart is empty</h2>
+                <div className="bg-white shadow-sm rounded-lg overflow-hidden mb-8 lg:mb-0">
+                  <ul role="list" className="divide-y divide-enzobay-neutral-200">
+                    {items.map((product) => {
+                      const price = product.price;
+                      const discountedPrice = product.discount 
+                        ? price * (1 - product.discount / 100) 
+                        : price;
+                      
+                      return (
+                        <li key={product.id} className="p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center">
+                          <div className="flex-shrink-0 sm:mr-6">
+                            <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-md border border-enzobay-neutral-200 bg-enzobay-neutral-50 overflow-hidden">
+                              <img
+                                src={product.images[0]}
+                                alt={product.name}
+                                className="h-full w-full object-cover object-center"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-1 flex-col mt-4 sm:mt-0">
+                            <div>
+                              <div className="flex justify-between">
+                                <h3 className="text-base sm:text-lg font-medium text-enzobay-brown">
+                                  <Link to={`/product/${product.id}`} className="hover:text-enzobay-blue">
+                                    {product.name}
+                                  </Link>
+                                </h3>
+                                <div className="ml-4 flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveItem(product.id, product.name)}
+                                    className="text-enzobay-neutral-400 hover:text-red-500"
+                                  >
+                                    <Trash className="h-5 w-5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="text-enzobay-neutral-400 hover:text-red-500"
+                                  >
+                                    <Heart className="h-5 w-5" />
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="mt-1 text-sm text-enzobay-neutral-500">
+                                {product.brand && <span>{product.brand} • </span>}
+                                {product.category && <span className="capitalize">{product.category}</span>}
+                              </p>
+                              
+                              {product.discount > 0 && (
+                                <p className="mt-1 text-sm font-medium text-green-600">
+                                  {product.discount}% off
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="mt-4 flex justify-between items-end flex-wrap gap-4">
+                              <div className="flex items-center border border-enzobay-neutral-300 rounded-md">
+                                <button
+                                  type="button"
+                                  className="p-2 text-enzobay-neutral-600 hover:text-enzobay-blue"
+                                  onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
+                                  disabled={product.quantity <= 1}
+                                >
+                                  <Minus className="h-4 w-4" />
+                                </button>
+                                <span className="px-4 py-2 text-sm font-medium text-enzobay-neutral-800">
+                                  {product.quantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="p-2 text-enzobay-neutral-600 hover:text-enzobay-blue"
+                                  onClick={() => handleQuantityChange(product.id, product.quantity + 1)}
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </button>
+                              </div>
+                              
+                              <div className="flex items-baseline">
+                                <span className="text-lg font-medium text-enzobay-brown">
+                                  {formatPrice(discountedPrice * product.quantity)}
+                                </span>
+                                
+                                {product.discount > 0 && (
+                                  <span className="ml-2 text-sm text-enzobay-neutral-500 line-through">
+                                    {formatPrice(price * product.quantity)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  
+                  <div className="border-t border-enzobay-neutral-200 p-6">
+                    <button
+                      type="button"
+                      onClick={handleClearCart}
+                      className="text-enzobay-neutral-600 hover:text-red-500 text-sm font-medium flex items-center"
+                    >
+                      <Trash className="h-4 w-4 mr-1" />
+                      Clear Cart
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              {/* Order summary */}
+              <section
+                aria-labelledby="summary-heading"
+                className="mt-8 lg:mt-0 lg:col-span-4"
+              >
+                <div className="bg-white shadow-sm rounded-lg p-6">
+                  <h2 id="summary-heading" className="text-lg font-medium text-enzobay-brown mb-6">
+                    Order Summary
+                  </h2>
+
+                  <dl className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <dt className="text-sm text-enzobay-neutral-600">Subtotal</dt>
+                      <dd className="text-sm font-medium text-enzobay-neutral-900">{formatPrice(subtotal)}</dd>
+                    </div>
+                    
+                    {discount > 0 && (
+                      <div className="flex items-center justify-between">
+                        <dt className="text-sm text-enzobay-neutral-600">Discount ({discount}%)</dt>
+                        <dd className="text-sm font-medium text-green-600">-{formatPrice(discountAmount)}</dd>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center justify-between border-t border-enzobay-neutral-200 pt-4">
+                      <dt className="text-sm text-enzobay-neutral-600">Shipping estimate</dt>
+                      <dd className="text-sm font-medium text-enzobay-neutral-900">
+                        {shippingEstimate === 0 ? "Free" : formatPrice(shippingEstimate)}
+                      </dd>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <dt className="text-sm text-enzobay-neutral-600">VAT (16%)</dt>
+                      <dd className="text-sm font-medium text-enzobay-neutral-900">{formatPrice(tax)}</dd>
+                    </div>
+                    
+                    <div className="flex items-center justify-between border-t border-enzobay-neutral-200 pt-4">
+                      <dt className="text-base font-medium text-enzobay-neutral-900">Order total</dt>
+                      <dd className="text-base font-medium text-enzobay-neutral-900">{formatPrice(total)}</dd>
+                    </div>
+                  </dl>
+                  
+                  <div className="mt-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex-grow">
+                        <input
+                          type="text"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          placeholder="Enter coupon code"
+                          className="block w-full rounded-md border-enzobay-neutral-300 shadow-sm focus:border-enzobay-blue focus:ring-enzobay-blue sm:text-sm"
+                        />
+                        {couponError && (
+                          <p className="mt-1 text-xs text-red-600">{couponError}</p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={isApplyingCoupon}
+                        className="ml-4 rounded-md bg-enzobay-blue px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark focus:outline-none disabled:opacity-70"
+                      >
+                        {isApplyingCoupon ? "Applying..." : "Apply"}
+                      </button>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={handleProceedToCheckout}
+                      className="w-full rounded-md border border-transparent bg-enzobay-orange py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-enzobay-orange-dark focus:outline-none flex items-center justify-center"
+                    >
+                      Proceed to Checkout <ChevronRight className="ml-1 h-5 w-5" />
+                    </button>
+                    
+                    <div className="mt-6 flex justify-between text-center">
+                      <div className="flex flex-col items-center">
+                        <CreditCard className="h-5 w-5 text-enzobay-neutral-500" />
+                        <span className="mt-1 text-xs text-enzobay-neutral-500">Secure Payment</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <Truck className="h-5 w-5 text-enzobay-neutral-500" />
+                        <span className="mt-1 text-xs text-enzobay-neutral-500">Free Shipping</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <Shield className="h-5 w-5 text-enzobay-neutral-500" />
+                        <span className="mt-1 text-xs text-enzobay-neutral-500">Money-Back Guarantee</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-8 bg-enzobay-neutral-100 rounded-lg p-6">
+                  <h3 className="text-sm font-medium text-enzobay-brown mb-4">We accept</h3>
+                  <div className="flex gap-2">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5977/5977576.png" alt="M-Pesa" className="h-8 w-auto" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-8 w-auto" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" className="h-8 w-auto" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="PayPal" className="h-8 w-auto" />
+                  </div>
+                </div>
+              </section>
+            </div>
+          ) : (
+            <div className="bg-white shadow-sm rounded-lg p-10 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-enzobay-neutral-100">
+                <ShoppingBag className="h-8 w-8 text-enzobay-neutral-400" />
+              </div>
+              <h3 className="mt-6 text-lg font-medium text-enzobay-brown">Your cart is empty</h3>
               <p className="mt-2 text-enzobay-neutral-500">
                 Looks like you haven't added any products to your cart yet.
               </p>
               <div className="mt-8">
                 <Link
                   to="/products"
-                  className="inline-flex items-center justify-center rounded-md border border-transparent bg-enzobay-blue px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-enzobay-blue-dark"
+                  className="inline-flex items-center rounded-md bg-enzobay-blue px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark focus:outline-none"
                 >
-                  Start Shopping
+                  Start Shopping <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </div>
-            </div>
-          ) : (
-            <div className="mt-8 lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start xl:gap-x-16">
-              <div className="lg:col-span-7">
-                <div className="border-t border-b border-enzobay-neutral-200 divide-y divide-enzobay-neutral-200">
-                  {items.map((item) => {
-                    // Calculate discounted price if applicable
-                    const price = item.price;
-                    const discountedPrice = item.discount 
-                      ? price * (1 - item.discount / 100) 
-                      : price;
-                    
-                    return (
-                      <div key={item.id} className="py-6 sm:py-8 flex">
-                        <div className="flex-shrink-0 relative">
-                          <img
-                            src={item.images[0]}
-                            alt={item.name}
-                            className="h-24 w-24 sm:h-32 sm:w-32 rounded-md object-cover object-center"
-                          />
-                          {item.discount && (
-                            <span className="absolute top-0 left-0 bg-enzobay-orange text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                              {item.discount}% OFF
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="ml-4 sm:ml-6 flex-1 flex flex-col justify-between">
-                          <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6">
-                            <div>
-                              <div className="flex justify-between">
-                                <h3 className="text-sm">
-                                  <Link to={`/product/${item.id}`} className="font-medium text-enzobay-brown hover:text-enzobay-blue">
-                                    {item.name}
-                                  </Link>
-                                </h3>
-                              </div>
-                              <div className="flex mt-1 text-sm">
-                                {item.options?.colors && (
-                                  <p className="text-enzobay-neutral-500">Color: {item.options.colors[0]}</p>
-                                )}
-                                {item.options?.sizes && (
-                                  <p className="text-enzobay-neutral-500 ml-4 border-l border-enzobay-neutral-200 pl-4">
-                                    Size: {item.options.sizes[0]}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="flex mt-1 text-sm">
-                                <p className="text-enzobay-neutral-500">{item.brand || 'EnzoBay'}</p>
-                              </div>
-                              <div className="mt-1 flex items-end">
-                                <p className="text-sm font-medium text-enzobay-brown">
-                                  {formatPrice(discountedPrice)}
-                                </p>
-                                {item.discount && (
-                                  <p className="text-xs text-enzobay-neutral-500 line-through ml-2">
-                                    {formatPrice(price)}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="mt-4 sm:mt-0 sm:pr-9 flex flex-col items-end">
-                              <div className="flex items-center border border-enzobay-neutral-300 rounded-md">
-                                <button
-                                  type="button"
-                                  className="p-2 text-enzobay-neutral-600 hover:text-enzobay-neutral-800"
-                                  onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                                >
-                                  <Minus className="h-4 w-4" />
-                                </button>
-                                <span className="px-2 py-1 text-sm text-center w-10">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="p-2 text-enzobay-neutral-600 hover:text-enzobay-neutral-800"
-                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </button>
-                              </div>
-                              
-                              <button
-                                type="button"
-                                className="mt-4 text-sm font-medium text-enzobay-neutral-500 hover:text-enzobay-neutral-800 flex items-center"
-                                onClick={() => removeItem(item.id)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-1" />
-                                Remove
-                              </button>
-                            </div>
-                          </div>
-
-                          <p className="mt-4 flex text-sm text-enzobay-neutral-700">
-                            <CheckCircleIcon className="flex-shrink-0 h-5 w-5 text-green-500" />
-                            <span className="ml-2">In stock and ready to ship</span>
-                          </p>
-                        </div>
+              
+              <div className="mt-12">
+                <h4 className="text-base font-medium text-enzobay-brown mb-4">Recommended for you</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {PRODUCTS.slice(0, 4).map(product => (
+                    <div key={product.id} className="relative">
+                      <div className="group aspect-square w-full overflow-hidden rounded-md bg-enzobay-neutral-100">
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="h-full w-full object-cover object-center group-hover:opacity-75"
+                        />
                       </div>
-                    );
-                  })}
-                </div>
-                
-                <div className="mt-4 flex justify-between">
-                  <button
-                    type="button"
-                    className="text-sm text-enzobay-neutral-500 hover:text-enzobay-neutral-800 flex items-center"
-                    onClick={() => clearCart()}
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Clear Cart
-                  </button>
-                  <Link
-                    to="/products"
-                    className="text-sm font-medium text-enzobay-blue hover:text-enzobay-blue-dark flex items-center"
-                  >
-                    Continue Shopping
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-
-              <div className="mt-16 rounded-lg bg-white border border-enzobay-neutral-200 lg:mt-0 lg:col-span-5">
-                <div className="px-4 py-6 sm:p-6 lg:p-8">
-                  <h2 className="text-lg font-medium text-enzobay-brown">Order Summary</h2>
-                  
-                  <div className="mt-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-enzobay-neutral-600">Subtotal ({getItemCount()} items)</p>
-                      <p className="text-sm font-medium text-enzobay-brown">{formatPrice(cartTotal)}</p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-enzobay-neutral-600">Shipping</p>
-                      <p className="text-sm font-medium text-enzobay-brown">
-                        {shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}
-                      </p>
-                    </div>
-                    
-                    {discountApplied && (
-                      <div className="flex items-center justify-between text-green-600">
-                        <p className="text-sm">Discount (10%)</p>
-                        <p className="text-sm font-medium">- {formatPrice(discountAmount)}</p>
+                      <div className="mt-2">
+                        <h3 className="text-sm text-enzobay-brown font-medium line-clamp-1">
+                          <Link to={`/product/${product.id}`}>
+                            {product.name}
+                          </Link>
+                        </h3>
+                        <p className="mt-1 text-sm text-enzobay-neutral-500">{formatPrice(product.price)}</p>
                       </div>
-                    )}
-                    
-                    <div className="border-t border-enzobay-neutral-200 pt-4 flex items-center justify-between">
-                      <p className="text-base font-medium text-enzobay-brown">Order Total</p>
-                      <p className="text-base font-medium text-enzobay-brown">{formatPrice(finalTotal)}</p>
                     </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        placeholder="Coupon Code"
-                        className="block w-full rounded-md border-enzobay-neutral-300 shadow-sm focus:border-enzobay-blue focus:ring-enzobay-blue sm:text-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={applyCoupon}
-                        className="rounded-md border border-enzobay-neutral-300 px-4 py-2 text-sm font-medium text-enzobay-brown hover:bg-enzobay-neutral-50"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                    {discountApplied && (
-                      <p className="mt-2 text-sm text-green-600">Coupon applied successfully!</p>
-                    )}
-                  </div>
-
-                  <div className="mt-6">
-                    <button
-                      type="button"
-                      onClick={handleCheckout}
-                      disabled={isLoading}
-                      className="w-full rounded-md border border-transparent bg-enzobay-orange py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-enzobay-orange-dark focus:outline-none focus:ring-2 focus:ring-enzobay-orange focus:ring-offset-2 focus:ring-offset-enzobay-neutral-50 flex items-center justify-center disabled:opacity-70"
-                    >
-                      {isLoading ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Processing...
-                        </>
-                      ) : (
-                        'Proceed to Checkout'
-                      )}
-                    </button>
-                  </div>
-                  
-                  <div className="mt-6 text-sm text-enzobay-neutral-500 flex items-center justify-center">
-                    <ShieldCheck className="h-5 w-5 text-enzobay-neutral-400 mr-2" />
-                    <p>Secure checkout powered by EnzoBay</p>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -274,21 +384,5 @@ export default function CartPage() {
       
       <Footer />
     </div>
-  );
-}
-
-// Helper icon component since we don't have this specific icon from lucide-react
-function CheckCircleIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <circle cx={12} cy={12} r={12} fill="currentColor" opacity="0.2" />
-      <path
-        d="M7 13l3 3 7-7"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

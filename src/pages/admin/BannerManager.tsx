@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BannerService } from "../../lib/api/bannerService"; 
 import { Banner } from "../../lib/types";
-import { Edit, Trash, Plus, X, Save, Eye, Copy, ToggleLeft, ToggleRight, Filter, RefreshCw, ChevronDown, Download, Upload, Maximize2, Calendar } from "lucide-react";
+import { Edit, Trash, Plus, X, Save, Eye, Copy, ToggleLeft, ToggleRight, Filter, RefreshCw, ChevronDown, Download, Upload, Maximize2, Calendar, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";

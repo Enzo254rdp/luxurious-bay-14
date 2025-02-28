@@ -20,9 +20,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     }).format(price);
   };
 
+  const calculateDiscountedPrice = (price: number, discount?: number) => {
+    if (!discount) return price;
+    return price * (1 - discount / 100);
+  };
+
   return (
     <div 
-      className="product-card group"
+      className="product-card group h-full flex flex-col bg-white"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -69,26 +74,50 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
         </div>
+        
+        {/* Quick Add Button (Jumia-like) */}
+        <div 
+          className={`absolute bottom-0 left-0 right-0 bg-enzobay-orange text-white text-center py-2 text-sm font-medium transition-transform duration-300 ${
+            isHovered ? "translate-y-0" : "translate-y-full"
+          }`}
+        >
+          Quick Add
+        </div>
       </div>
       
       {/* Product Info */}
-      <div className="p-4">
+      <div className="p-3 flex flex-col flex-1">
         <Link to={`/product/${product.id}`} className="block">
-          <h3 className="font-medium text-enzobay-brown group-hover:text-enzobay-orange transition-colors duration-300">
+          <h3 className="text-sm md:text-base font-medium line-clamp-2 text-enzobay-neutral-800 group-hover:text-enzobay-orange transition-colors duration-300 mb-1">
             {product.name}
           </h3>
         </Link>
         
-        <div className="mt-1 flex items-center justify-between">
-          <p className="font-semibold text-enzobay-brown">{formatPrice(product.price)}</p>
+        <div className="flex items-center mt-auto">
+          <div className="flex flex-col">
+            {product.discount ? (
+              <>
+                <span className="font-semibold text-enzobay-brown">
+                  {formatPrice(calculateDiscountedPrice(product.price, product.discount))}
+                </span>
+                <span className="text-xs text-enzobay-neutral-500 line-through">
+                  {formatPrice(product.price)}
+                </span>
+              </>
+            ) : (
+              <span className="font-semibold text-enzobay-brown">
+                {formatPrice(product.price)}
+              </span>
+            )}
+          </div>
           
-          <div className="flex items-center gap-1">
+          <div className="ml-auto flex items-center">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
                 <svg
                   key={i}
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-4 w-4 ${
+                  className={`h-3 w-3 ${
                     i < Math.floor(product.rating)
                       ? "text-enzobay-orange"
                       : "text-enzobay-neutral-300"
@@ -100,7 +129,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </svg>
               ))}
             </div>
-            <span className="text-xs text-enzobay-neutral-500">({product.reviews})</span>
+            <span className="text-xs text-enzobay-neutral-500 ml-1">({product.reviews})</span>
           </div>
         </div>
       </div>

@@ -26,14 +26,13 @@ export default function Navbar() {
       }`}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        {/* Logo */}
+        {/* Text Logo */}
         <Link to="/" className="relative z-50">
           <div className="flex items-center">
-            <img 
-              src="/lovable-uploads/d698f888-e47d-47d9-b3be-ea5ea947932c.png" 
-              alt="EnzoBay Logo" 
-              className="h-12 w-auto object-contain"
-            />
+            <h1 className="text-2xl md:text-3xl font-bold">
+              <span className="text-gradient-gold">Enzo</span>
+              <span className="text-gradient-blue">Bay</span>
+            </h1>
           </div>
         </Link>
         

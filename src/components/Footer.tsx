@@ -12,11 +12,10 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-6">
             <div>
-              <img 
-                src="/lovable-uploads/d698f888-e47d-47d9-b3be-ea5ea947932c.png" 
-                alt="EnzoBay Logo" 
-                className="h-12 w-auto object-contain brightness-200 contrast-200"
-              />
+              <h1 className="text-3xl font-bold">
+                <span className="text-enzobay-orange">Enzo</span>
+                <span className="text-enzobay-blue">Bay</span>
+              </h1>
             </div>
             <p className="text-sm leading-relaxed max-w-xs">
               Premium luxury e-commerce platform offering exclusive products with exceptional 

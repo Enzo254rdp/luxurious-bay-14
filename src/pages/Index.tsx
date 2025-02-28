@@ -39,6 +39,32 @@ const Index = () => {
     <div className="min-h-screen bg-enzobay-neutral-50">
       <Navbar />
       <main>
+        {/* Featured Products Section - Displaying products immediately on load */}
+        <section className="py-6 bg-white border-b">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-enzobay-brown flex items-center">
+                <span className="mr-2 inline-block w-3 h-6 bg-enzobay-orange"></span>
+                Top Picks For You
+              </h2>
+              <Link 
+                to="/products?sort=popular" 
+                className="text-enzobay-orange hover:underline flex items-center text-sm font-medium"
+              >
+                See All <ChevronRight className="h-4 w-4 ml-1" />
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {PRODUCTS.slice(0, 6).map((product, index) => (
+                <div key={product.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                  <ProductCard product={product} size="sm" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Hero Section */}
         <Hero />
         
@@ -59,9 +85,9 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {PRODUCTS.filter(p => p.discount).slice(0, 6).map(product => (
-                <div key={product.id} className="animate-fade-in" style={{animationDelay: `${parseInt(product.id) * 0.1}s`}}>
-                  <ProductCard product={product} />
+              {PRODUCTS.filter(p => p.discount).slice(0, 6).map((product, index) => (
+                <div key={product.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                  <ProductCard product={product} size="sm" />
                 </div>
               ))}
             </div>
@@ -234,7 +260,7 @@ const Index = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {PRODUCTS.sort((a, b) => b.rating - a.rating).slice(0, 6).map((product, index) => (
                 <div key={product.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
-                  <ProductCard product={product} />
+                  <ProductCard product={product} size="sm" />
                 </div>
               ))}
             </div>
@@ -257,15 +283,10 @@ const Index = () => {
                 <div className="flex items-center mb-4">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <svg
+                      <Star
                         key={i}
-                        xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5 text-enzobay-orange"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
+                      />
                     ))}
                   </div>
                 </div>
@@ -288,15 +309,10 @@ const Index = () => {
                 <div className="flex items-center mb-4">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <svg
+                      <Star
                         key={i}
-                        xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5 text-enzobay-orange"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
+                      />
                     ))}
                   </div>
                 </div>
@@ -319,15 +335,10 @@ const Index = () => {
                 <div className="flex items-center mb-4">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <svg
+                      <Star
                         key={i}
-                        xmlns="http://www.w3.org/2000/svg"
                         className="h-5 w-5 text-enzobay-orange"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
+                      />
                     ))}
                   </div>
                 </div>
@@ -349,23 +360,23 @@ const Index = () => {
         </section>
         
         {/* Newsletter Section */}
-        <section className="py-12 bg-white">
+        <section className="py-8 bg-white">
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto bg-gradient-to-r from-enzobay-blue/10 to-enzobay-orange/10 rounded-xl p-8 text-center animate-fade-in">
-              <h2 className="text-2xl md:text-3xl font-bold text-enzobay-brown mb-4">Join Our Newsletter</h2>
-              <p className="text-enzobay-neutral-700 mb-6">Get the latest updates on new products, special offers, and exclusive content.</p>
+            <div className="max-w-3xl mx-auto bg-gradient-to-r from-enzobay-blue/10 to-enzobay-orange/10 rounded-xl p-6 text-center animate-fade-in">
+              <h2 className="text-2xl font-bold text-enzobay-brown mb-3">Join Our Newsletter</h2>
+              <p className="text-enzobay-neutral-700 mb-4">Get the latest updates on new products, special offers, and exclusive content.</p>
               
               <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                 <input 
                   type="email" 
                   placeholder="Your email address" 
-                  className="flex-1 py-3 px-4 rounded-lg border border-enzobay-neutral-200 focus:outline-none focus:border-enzobay-blue focus:ring-2 focus:ring-enzobay-blue/20"
+                  className="flex-1 py-2 px-4 rounded-lg border border-enzobay-neutral-200 focus:outline-none focus:border-enzobay-blue focus:ring-2 focus:ring-enzobay-blue/20"
                 />
-                <button className="btn-primary whitespace-nowrap">
+                <button className="btn-primary whitespace-nowrap py-2 px-4">
                   Subscribe Now
                 </button>
               </div>
-              <p className="text-xs text-enzobay-neutral-500 mt-4">By subscribing, you agree to our Privacy Policy and consent to receive updates from EnzoBay.</p>
+              <p className="text-xs text-enzobay-neutral-500 mt-3">By subscribing, you agree to our Privacy Policy and consent to receive updates from EnzoBay.</p>
             </div>
           </div>
         </section>

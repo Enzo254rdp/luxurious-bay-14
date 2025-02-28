@@ -224,7 +224,7 @@ export default function CategoriesPage() {
                     <div className="mt-4 flex justify-between items-center">
                       <span className="inline-flex items-center text-xs font-medium text-enzobay-neutral-700 bg-enzobay-neutral-100 px-2.5 py-0.5 rounded-full">
                         <ShoppingBag className="h-3 w-3 mr-1" />
-                        {category.productCount || Math.floor(Math.random() * 50) + 10} products
+                        {Math.floor(Math.random() * 50) + 10} products
                       </span>
                       <span className="text-enzobay-blue text-sm font-medium group-hover:translate-x-1 transition-transform duration-300 flex items-center">
                         Browse <ArrowRight className="ml-1 h-4 w-4" />

@@ -1,147 +1,88 @@
 
 import { Link } from "react-router-dom";
-import { Mail, MapPin, Phone, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-enzobay-brown text-white">
-      {/* Main Footer */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">EnzoBay</h3>
-            <p className="text-enzobay-neutral-300 mb-6">
-              Your premier destination for luxury products. We offer a curated selection of high-quality items that bring elegance and style to your life.
-            </p>
-            <div className="flex space-x-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
-                <Facebook className="h-5 w-5" />
+    <footer className="bg-enzobay-brown text-white border-t">
+      {/* Compact footer with reduced height */}
+      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-4">
+          {/* Column 1: Logo and Contact */}
+          <div className="col-span-2">
+            <Link to="/" className="text-xl font-bold text-white mb-3 flex items-center">
+              Enzo<span className="text-enzobay-orange">Bay</span>
+            </Link>
+            <div className="flex flex-col space-y-1 text-sm">
+              <a href="tel:+254792012904" className="text-enzobay-neutral-300 hover:text-white flex items-center">
+                <Phone className="h-4 w-4 mr-2 text-enzobay-orange" />
+                +254 792 012 904
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
-                <Instagram className="h-5 w-5" />
+              <a href="mailto:info@enzobay.com" className="text-enzobay-neutral-300 hover:text-white flex items-center">
+                <Mail className="h-4 w-4 mr-2 text-enzobay-orange" />
+                info@enzobay.com
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
-                <Youtube className="h-5 w-5" />
-              </a>
+              <div className="flex space-x-2 mt-3">
+                <a href="#" className="text-enzobay-neutral-300 hover:text-enzobay-orange">
+                  <Facebook className="h-4 w-4" />
+                </a>
+                <a href="#" className="text-enzobay-neutral-300 hover:text-enzobay-orange">
+                  <Twitter className="h-4 w-4" />
+                </a>
+                <a href="#" className="text-enzobay-neutral-300 hover:text-enzobay-orange">
+                  <Instagram className="h-4 w-4" />
+                </a>
+                <a href="#" className="text-enzobay-neutral-300 hover:text-enzobay-orange">
+                  <Youtube className="h-4 w-4" />
+                </a>
+              </div>
             </div>
           </div>
           
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-enzobay-neutral-300 hover:text-white transition-colors">Home</Link>
-              </li>
-              <li>
-                <Link to="/products" className="text-enzobay-neutral-300 hover:text-white transition-colors">Shop</Link>
-              </li>
-              <li>
-                <Link to="/categories" className="text-enzobay-neutral-300 hover:text-white transition-colors">Categories</Link>
-              </li>
-              <li>
-                <Link to="/flash-sale" className="text-enzobay-neutral-300 hover:text-white transition-colors">Flash Sale</Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-enzobay-neutral-300 hover:text-white transition-colors">About Us</Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-enzobay-neutral-300 hover:text-white transition-colors">Contact Us</Link>
-              </li>
+          {/* Column 2: Quick Links */}
+          <div className="text-sm">
+            <h3 className="font-semibold mb-2 text-enzobay-orange">Products</h3>
+            <ul className="space-y-1">
+              <li><Link to="/products?category=clothing" className="text-enzobay-neutral-300 hover:text-white">Clothing</Link></li>
+              <li><Link to="/products?category=electronics" className="text-enzobay-neutral-300 hover:text-white">Electronics</Link></li>
+              <li><Link to="/products?category=accessories" className="text-enzobay-neutral-300 hover:text-white">Accessories</Link></li>
+              <li><Link to="/flash-sale" className="text-enzobay-neutral-300 hover:text-white">Flash Sale</Link></li>
             </ul>
           </div>
           
-          {/* Customer Service */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">Customer Service</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/faq" className="text-enzobay-neutral-300 hover:text-white transition-colors">FAQs</Link>
-              </li>
-              <li>
-                <Link to="/shipping" className="text-enzobay-neutral-300 hover:text-white transition-colors">Shipping Information</Link>
-              </li>
-              <li>
-                <Link to="/returns" className="text-enzobay-neutral-300 hover:text-white transition-colors">Returns & Refunds</Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-enzobay-neutral-300 hover:text-white transition-colors">Privacy Policy</Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-enzobay-neutral-300 hover:text-white transition-colors">Terms of Service</Link>
-              </li>
+          {/* Column 3: Information */}
+          <div className="text-sm">
+            <h3 className="font-semibold mb-2 text-enzobay-orange">Information</h3>
+            <ul className="space-y-1">
+              <li><Link to="/about" className="text-enzobay-neutral-300 hover:text-white">About Us</Link></li>
+              <li><Link to="/contact" className="text-enzobay-neutral-300 hover:text-white">Contact Us</Link></li>
+              <li><Link to="/privacy" className="text-enzobay-neutral-300 hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-enzobay-neutral-300 hover:text-white">Terms of Service</Link></li>
             </ul>
           </div>
           
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-xl font-bold mb-4">Contact Us</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <MapPin className="h-5 w-5 text-enzobay-orange mr-3 mt-0.5 flex-shrink-0" />
-                <span className="text-enzobay-neutral-300">
-                  123 Luxury Avenue, Westlands<br />
-                  Nairobi, Kenya
-                </span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="h-5 w-5 text-enzobay-orange mr-3 flex-shrink-0" />
-                <a href="tel:+254700123456" className="text-enzobay-neutral-300 hover:text-white transition-colors">
-                  +254 700 123 456
-                </a>
-              </li>
-              <li className="flex items-center">
-                <Mail className="h-5 w-5 text-enzobay-orange mr-3 flex-shrink-0" />
-                <a href="mailto:info@enzobay.com" className="text-enzobay-neutral-300 hover:text-white transition-colors">
-                  info@enzobay.com
-                </a>
-              </li>
+          {/* Column 4: Support */}
+          <div className="text-sm">
+            <h3 className="font-semibold mb-2 text-enzobay-orange">Support</h3>
+            <ul className="space-y-1">
+              <li><Link to="/faq" className="text-enzobay-neutral-300 hover:text-white">FAQs</Link></li>
+              <li><Link to="/shipping" className="text-enzobay-neutral-300 hover:text-white">Shipping Info</Link></li>
+              <li><Link to="/returns" className="text-enzobay-neutral-300 hover:text-white">Returns</Link></li>
+              <li><Link to="/track-order" className="text-enzobay-neutral-300 hover:text-white">Track Order</Link></li>
             </ul>
           </div>
         </div>
-      </div>
-      
-      {/* Newsletter */}
-      <div className="border-t border-white/10">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <h3 className="text-lg font-bold mb-2">Subscribe to Our Newsletter</h3>
-              <p className="text-enzobay-neutral-300">
-                Stay updated with our latest offers and promotions.
-              </p>
-            </div>
-            <div className="flex w-full md:w-auto">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
-                className="w-full md:w-64 bg-white/10 border border-white/20 py-2 px-4 rounded-l-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-enzobay-orange/50"
-              />
-              <button className="bg-enzobay-orange hover:bg-enzobay-orange-dark py-2 px-4 rounded-r-md font-medium transition-colors">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Copyright */}
-      <div className="bg-enzobay-brown-dark py-4 border-t border-white/10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-enzobay-neutral-400 text-sm">
-              &copy; {new Date().getFullYear()} EnzoBay. All rights reserved.
-            </p>
-            <div className="flex gap-4 mt-4 md:mt-0">
-              <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-6 w-auto" />
-              <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" className="h-6 w-auto" />
-              <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="PayPal" className="h-6 w-auto" />
-              <img src="https://cdn-icons-png.flaticon.com/512/5977/5977576.png" alt="M-Pesa" className="h-6 w-auto" />
-            </div>
+        
+        {/* Copyright */}
+        <div className="mt-4 pt-4 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-enzobay-neutral-400 text-xs">
+            &copy; {new Date().getFullYear()} EnzoBay. All rights reserved.
+          </p>
+          <div className="flex gap-2 mt-2 md:mt-0">
+            <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-5 w-auto" />
+            <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" className="h-5 w-auto" />
+            <img src="https://cdn-icons-png.flaticon.com/512/196/196565.png" alt="PayPal" className="h-5 w-auto" />
+            <img src="https://cdn-icons-png.flaticon.com/512/5977/5977576.png" alt="M-Pesa" className="h-5 w-auto" />
           </div>
         </div>
       </div>

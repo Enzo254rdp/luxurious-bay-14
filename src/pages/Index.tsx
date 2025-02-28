@@ -11,7 +11,6 @@ import { ArrowRight, ChevronRight, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import BannerManager from "../components/BannerManager";
-import RecentlyViewed from "../components/RecentlyViewed";
 
 const Index = () => {
   const { toast } = useToast();
@@ -375,9 +374,6 @@ const Index = () => {
             </div>
           </div>
         </section>
-        
-        {/* Recently Viewed Products */}
-        <RecentlyViewed />
         
         {/* Newsletter Section - More compact */}
         <section className="py-6 bg-white">

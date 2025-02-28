@@ -28,6 +28,7 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AdminBannerManager from "./pages/admin/BannerManager";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,9 @@ const App = () => (
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/banners" element={<AdminBannerManager />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

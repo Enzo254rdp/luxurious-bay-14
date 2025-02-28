@@ -1,12 +1,17 @@
 
 import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
+import animatePlugin from "tailwindcss-animate";
 
-export default {
+const config = {
   darkMode: ["class"],
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+	],
+  prefix: "",
   theme: {
     container: {
       center: true,
@@ -16,6 +21,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Inter var", ...fontFamily.sans],
+        serif: ["Georgia", "Times New Roman", ...fontFamily.serif],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -50,33 +59,37 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        "enzobay-blue": {
-          DEFAULT: "#0f4c81",
-          light: "#a4c2e2",
-          dark: "#0a3358",
-          50: "#e7f0f9",
-        },
-        "enzobay-orange": {
-          DEFAULT: "#ff7e32",
-          light: "#ffc8a3",
-          dark: "#c5591e",
-        },
-        "enzobay-brown": {
-          DEFAULT: "#483434",
-          light: "#785858",
-          dark: "#2c1f1f",
-        },
-        "enzobay-neutral": {
-          50: "#F9FAFB",
-          100: "#F3F4F6",
-          200: "#E5E7EB",
-          300: "#D1D5DB",
-          400: "#9CA3AF",
-          500: "#6B7280",
-          600: "#4B5563",
-          700: "#374151",
-          800: "#1F2937",
-          900: "#111827",
+        enzobay: {
+          blue: {
+            light: "#4dabf7",
+            DEFAULT: "#2d87c8",
+            dark: "#1864ab",
+          },
+          orange: {
+            light: "#f59f00",
+            DEFAULT: "#f08c00",
+            dark: "#e67700",
+          },
+          brown: {
+            light: "#4e3629",
+            DEFAULT: "#3d2c22",
+            dark: "#2c1f19",
+          },
+          red: {
+            DEFAULT: "#e74c3c",
+          },
+          neutral: {
+            50: "#f8f9fa",
+            100: "#f1f3f5",
+            200: "#e9ecef",
+            300: "#dee2e6",
+            400: "#ced4da",
+            500: "#adb5bd",
+            600: "#868e96",
+            700: "#495057",
+            800: "#343a40",
+            900: "#212529",
+          },
         },
       },
       borderRadius: {
@@ -93,44 +106,14 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        wiggle: {
-          '0%, 100%': { transform: 'rotate(0deg)' },
-          '25%': { transform: 'rotate(-5deg)' },
-          '75%': { transform: 'rotate(5deg)' },
-        },
-        'ping-once': {
-          '0%': { transform: 'scale(1)', opacity: '1' },
-          '50%': { transform: 'scale(1.5)', opacity: '0.8' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-        'slide-in-right': {
-          '0%': { transform: 'translateX(100%)' },
-          '100%': { transform: 'translateX(0)' },
-        },
-        'slide-in-left': {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(0)' },
-        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        fadeIn: 'fadeIn 0.5s ease-out forwards',
-        fadeInUp: 'fadeInUp 0.5s ease-out forwards',
-        wiggle: 'wiggle 1s ease-in-out',
-        'ping-once': 'ping-once 1s cubic-bezier(0, 0, 0.2, 1)',
-        'slide-in-right': 'slide-in-right 0.3s ease-out',
-        'slide-in-left': 'slide-in-left 0.3s ease-out'
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animatePlugin],
 } satisfies Config;
+
+export default config;

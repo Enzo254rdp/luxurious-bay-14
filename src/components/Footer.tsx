@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { Mail, Phone, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import EnzoBayLogo from "./EnzoBayLogo";
 
 export default function Footer() {
   return (
@@ -10,9 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-4">
           {/* Column 1: Logo and Contact */}
           <div className="col-span-2">
-            <Link to="/" className="text-xl font-bold text-white mb-3 flex items-center">
-              Enzo<span className="text-enzobay-orange">Bay</span>
-            </Link>
+            <EnzoBayLogo variant="light" className="mb-3" />
             <div className="flex flex-col space-y-1 text-sm">
               <a href="tel:+254792012904" className="text-enzobay-neutral-300 hover:text-white flex items-center">
                 <Phone className="h-4 w-4 mr-2 text-enzobay-orange" />

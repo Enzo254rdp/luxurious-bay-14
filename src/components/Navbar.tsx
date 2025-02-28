@@ -1,238 +1,378 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Search, Heart, User, ShoppingCart, ChevronDown } from "lucide-react";
-import { CartButton } from "./ui/cart-button";
+import { useScrollPosition } from "../hooks/use-mobile";
+import { useWishlistStore, useCartStore } from "../lib/store";
+import { Heart, ShoppingCart, User, Search, Menu, X, ChevronDown } from "lucide-react";
+import EnzoBayLogo from "./EnzoBayLogo";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const location = useLocation();
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { pathname } = useLocation();
+  const scrollPosition = useScrollPosition();
   
-  // Handle scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const { items: cartItems, getItemCount } = useCartStore();
+  const { items: wishlistItems } = useWishlistStore();
   
-  // Close mobile menu when route changes
+  const cartCount = getItemCount();
+  const wishlistCount = wishlistItems.length;
+  
   useEffect(() => {
     setIsMenuOpen(false);
-  }, [location.pathname]);
+  }, [pathname]);
   
-  // Handle search submission
-  const handleSearch = (e: React.FormEvent) => {
+  useEffect(() => {
+    setIsScrolled(scrollPosition > 10);
+  }, [scrollPosition]);
+  
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchTerm.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchTerm)}`;
+    if (searchQuery.trim()) {
+      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
     }
   };
-
+  
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-white shadow-md' : 'bg-white/95'}`}>
-      {/* Top Bar */}
-      <div className="bg-enzobay-brown text-white py-2 text-sm">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <p>Free shipping on orders over KSH 5,000</p>
-          <div className="hidden md:flex space-x-4">
-            <Link to="/shipping" className="hover:text-enzobay-orange transition-colors">Shipping</Link>
-            <Link to="/returns" className="hover:text-enzobay-orange transition-colors">Returns</Link>
-            <Link to="/contact" className="hover:text-enzobay-orange transition-colors">Contact Us</Link>
-          </div>
-        </div>
-      </div>
-      
-      {/* Main Navigation */}
+    <header 
+      className={`sticky top-0 z-50 bg-white ${
+        isScrolled ? "shadow-md" : ""
+      } transition-shadow duration-300`}
+    >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Mobile menu button */}
+          <div className="flex md:hidden">
+            <button
+              type="button"
+              className="text-enzobay-neutral-600 hover:text-enzobay-brown"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
+          
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-enzobay-brown">
-            Enzo<span className="text-enzobay-orange">Bay</span>
-          </Link>
+          <div className="flex-shrink-0 flex items-center">
+            <EnzoBayLogo />
+          </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className={`nav-link ${location.pathname === '/' ? 'text-enzobay-orange' : 'text-enzobay-brown'}`}>
+          <nav className="hidden md:flex space-x-8">
+            <Link 
+              to="/"
+              className={`nav-link ${pathname === "/" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+            >
               Home
             </Link>
             <div className="relative group">
-              <button className="flex items-center gap-1 text-enzobay-brown group-hover:text-enzobay-orange transition-colors">
-                Categories <ChevronDown className="h-4 w-4" />
-              </button>
-              <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md overflow-hidden z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                <div className="py-2">
-                  <Link to="/categories" className="block px-4 py-2 text-enzobay-neutral-800 hover:bg-enzobay-neutral-100">
-                    All Categories
+              <Link 
+                to="/products"
+                className={`nav-link flex items-center ${pathname === "/products" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+              >
+                Products <ChevronDown className="ml-1 h-4 w-4" />
+              </Link>
+              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="py-1" role="menu" aria-orientation="vertical">
+                  <Link
+                    to="/products"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue"
+                    role="menuitem"
+                  >
+                    All Products
                   </Link>
-                  <Link to="/products?category=watches" className="block px-4 py-2 text-enzobay-neutral-800 hover:bg-enzobay-neutral-100">
-                    Watches
+                  <Link
+                    to="/categories"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue"
+                    role="menuitem"
+                  >
+                    Categories
                   </Link>
-                  <Link to="/products?category=bags" className="block px-4 py-2 text-enzobay-neutral-800 hover:bg-enzobay-neutral-100">
-                    Bags
+                  <Link
+                    to="/products?sort=popular"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue"
+                    role="menuitem"
+                  >
+                    Most Popular
                   </Link>
-                  <Link to="/products?category=accessories" className="block px-4 py-2 text-enzobay-neutral-800 hover:bg-enzobay-neutral-100">
-                    Accessories
-                  </Link>
-                  <Link to="/products?category=clothing" className="block px-4 py-2 text-enzobay-neutral-800 hover:bg-enzobay-neutral-100">
-                    Clothing
-                  </Link>
-                  <Link to="/products?category=electronics" className="block px-4 py-2 text-enzobay-neutral-800 hover:bg-enzobay-neutral-100">
-                    Electronics
+                  <Link
+                    to="/products?sort=newest"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue"
+                    role="menuitem"
+                  >
+                    New Arrivals
                   </Link>
                 </div>
               </div>
             </div>
-            <Link to="/products" className={`nav-link ${location.pathname === '/products' ? 'text-enzobay-orange' : 'text-enzobay-brown'}`}>
-              Shop
+            <Link 
+              to="/sale"
+              className={`nav-link ${pathname === "/sale" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+            >
+              Sale
             </Link>
-            <Link to="/flash-sale" className={`nav-link ${location.pathname === '/flash-sale' ? 'text-enzobay-orange' : 'text-enzobay-brown'}`}>
-              Flash Sale
-            </Link>
-            <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'text-enzobay-orange' : 'text-enzobay-brown'}`}>
+            <Link 
+              to="/about"
+              className={`nav-link ${pathname === "/about" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+            >
               About
+            </Link>
+            <Link 
+              to="/contact"
+              className={`nav-link ${pathname === "/contact" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+            >
+              Contact
             </Link>
           </nav>
           
-          {/* Search and Actions */}
-          <div className="flex items-center space-x-2 md:space-x-4">
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="hidden md:flex relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-enzobay-neutral-100 py-2 pl-10 pr-4 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-enzobay-orange/50 w-40 lg:w-56"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-enzobay-neutral-500" />
-            </form>
+          {/* Search and User Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Search Icon and Form */}
+            <div className="relative">
+              <button
+                type="button"
+                className="text-enzobay-neutral-600 hover:text-enzobay-brown"
+                onClick={() => setShowSearch(!showSearch)}
+              >
+                <Search className="h-5 w-5" />
+              </button>
+              
+              {showSearch && (
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg p-2 z-50">
+                  <form onSubmit={handleSearchSubmit} className="flex">
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      className="flex-1 border-enzobay-neutral-300 rounded-l-md shadow-sm focus:ring-enzobay-blue focus:border-enzobay-blue sm:text-sm"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      autoFocus
+                    />
+                    <button
+                      type="submit"
+                      className="bg-enzobay-blue text-white px-3 py-2 rounded-r-md"
+                    >
+                      <Search className="h-4 w-4" />
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
             
-            {/* Action Icons */}
-            <button className="p-2 text-enzobay-brown hover:text-enzobay-orange transition-colors">
-              <User className="h-6 w-6" />
-            </button>
-            <button className="p-2 text-enzobay-brown hover:text-enzobay-orange transition-colors relative">
-              <Heart className="h-6 w-6" />
-              <span className="absolute -top-1 -right-1 bg-enzobay-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span>
-            </button>
-            <CartButton itemCount={4} />
+            {/* User menu */}
+            <div className="relative group">
+              <Link to="/login" className="text-enzobay-neutral-600 hover:text-enzobay-brown">
+                <User className="h-5 w-5" />
+              </Link>
+              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                <div className="py-1" role="menu" aria-orientation="vertical">
+                  <Link
+                    to="/login"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                    role="menuitem"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                    role="menuitem"
+                  >
+                    Register
+                  </Link>
+                  <hr className="my-1 border-enzobay-neutral-200" />
+                  <Link
+                    to="/account"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                    role="menuitem"
+                  >
+                    My Account
+                  </Link>
+                  <Link
+                    to="/orders"
+                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                    role="menuitem"
+                  >
+                    My Orders
+                  </Link>
+                </div>
+              </div>
+            </div>
             
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-enzobay-brown hover:text-enzobay-orange transition-colors"
+            {/* Wishlist Icon with Badge */}
+            <Link 
+              to="/wishlist" 
+              className="text-enzobay-neutral-600 hover:text-enzobay-brown relative"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+              <Heart className="h-5 w-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-enzobay-orange text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  {wishlistCount > 9 ? '9+' : wishlistCount}
+                </span>
+              )}
+            </Link>
+            
+            {/* Cart Icon with Badge */}
+            <Link 
+              to="/cart" 
+              className="text-enzobay-neutral-600 hover:text-enzobay-brown relative"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-enzobay-orange text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
+            </Link>
           </div>
         </div>
       </div>
       
-      {/* Mobile Search Bar */}
-      <div className="block md:hidden border-t border-enzobay-neutral-200">
-        <div className="container mx-auto px-4 py-3">
-          <form onSubmit={handleSearch} className="relative">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-enzobay-neutral-100 py-2 pl-10 pr-4 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-enzobay-orange/50 w-full"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-enzobay-neutral-500" />
-          </form>
-        </div>
-      </div>
-      
-      {/* Mobile Menu */}
-      <div className={`md:hidden fixed inset-0 bg-white z-40 transition-transform duration-300 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-4 h-full overflow-y-auto">
-          <div className="flex justify-between items-center mb-6">
-            <Link to="/" className="text-2xl font-bold text-enzobay-brown">
-              Enzo<span className="text-enzobay-orange">Bay</span>
-            </Link>
-            <button 
+      {/* Mobile Menu Drawer */}
+      <div 
+        className={`fixed inset-0 flex z-40 md:hidden transition-opacity duration-300 ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {/* Overlay */}
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50" 
+          onClick={() => setIsMenuOpen(false)}
+        ></div>
+        
+        {/* Drawer panel */}
+        <div 
+          className={`relative flex-1 flex flex-col max-w-xs w-full bg-white transform transition-transform ease-in-out duration-300 ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="absolute top-0 right-0 pt-4 pr-4">
+            <button
+              type="button"
+              className="text-enzobay-neutral-600 hover:text-enzobay-brown"
               onClick={() => setIsMenuOpen(false)}
-              className="p-2 text-enzobay-brown hover:text-enzobay-orange transition-colors"
             >
               <X className="h-6 w-6" />
             </button>
           </div>
           
-          <nav className="space-y-4">
-            <Link to="/" className="block py-2 text-lg text-enzobay-brown hover:text-enzobay-orange transition-colors">
-              Home
-            </Link>
-            <div>
-              <div className="py-2 text-lg text-enzobay-brown">Categories</div>
-              <div className="pl-4 space-y-2">
-                <Link to="/categories" className="block py-1 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                  All Categories
-                </Link>
-                <Link to="/products?category=watches" className="block py-1 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                  Watches
-                </Link>
-                <Link to="/products?category=bags" className="block py-1 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                  Bags
-                </Link>
-                <Link to="/products?category=accessories" className="block py-1 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                  Accessories
-                </Link>
-                <Link to="/products?category=clothing" className="block py-1 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                  Clothing
-                </Link>
-                <Link to="/products?category=electronics" className="block py-1 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                  Electronics
-                </Link>
-              </div>
+          <div className="pt-5 pb-4 px-4">
+            <div className="flex items-center">
+              <EnzoBayLogo />
             </div>
-            <Link to="/products" className="block py-2 text-lg text-enzobay-brown hover:text-enzobay-orange transition-colors">
-              Shop
-            </Link>
-            <Link to="/flash-sale" className="block py-2 text-lg text-enzobay-brown hover:text-enzobay-orange transition-colors">
-              Flash Sale
-            </Link>
-            <Link to="/about" className="block py-2 text-lg text-enzobay-brown hover:text-enzobay-orange transition-colors">
-              About
-            </Link>
-            
-            <div className="border-t border-enzobay-neutral-200 pt-4 mt-4">
-              <Link to="/shipping" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                Shipping Info
+          </div>
+          
+          <div className="mt-5 px-4 border-t border-enzobay-neutral-200">
+            <nav className="flex-1 mt-4 space-y-4">
+              <Link 
+                to="/"
+                className={`block text-base font-medium ${pathname === "/" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
               </Link>
-              <Link to="/returns" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                Returns & Refunds
+              <Link 
+                to="/products"
+                className={`block text-base font-medium ${pathname === "/products" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Products
               </Link>
-              <Link to="/contact" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                Contact Us
+              <Link 
+                to="/categories"
+                className={`block text-base font-medium ${pathname === "/categories" ? "text-enzobay-orange" : "text-enzobay-neutral-700"} pl-4 border-l-2 border-enzobay-neutral-100`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Categories
               </Link>
-              <Link to="/faq" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors">
-                FAQs
+              <Link 
+                to="/products?sort=newest"
+                className={`block text-base font-medium text-enzobay-neutral-700 pl-4 border-l-2 border-enzobay-neutral-100`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                New Arrivals
+              </Link>
+              <Link 
+                to="/products?sort=popular"
+                className={`block text-base font-medium text-enzobay-neutral-700 pl-4 border-l-2 border-enzobay-neutral-100`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Most Popular
+              </Link>
+              <Link 
+                to="/sale"
+                className={`block text-base font-medium ${pathname === "/sale" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Sale
+              </Link>
+              <Link 
+                to="/about"
+                className={`block text-base font-medium ${pathname === "/about" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
+                to="/contact"
+                className={`block text-base font-medium ${pathname === "/contact" ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact
+              </Link>
+            </nav>
+          </div>
+          
+          <div className="px-4 py-6 border-t border-enzobay-neutral-200">
+            <div className="flex items-center justify-around">
+              <Link 
+                to="/login" 
+                className="text-enzobay-blue hover:text-enzobay-blue-dark"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="flex flex-col items-center">
+                  <User className="h-6 w-6" />
+                  <span className="mt-1 text-xs">Account</span>
+                </div>
+              </Link>
+              <Link 
+                to="/wishlist" 
+                className="text-enzobay-blue hover:text-enzobay-blue-dark relative"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="flex flex-col items-center">
+                  <Heart className="h-6 w-6" />
+                  <span className="mt-1 text-xs">Wishlist</span>
+                </div>
+                {wishlistCount > 0 && (
+                  <span className="absolute top-0 right-5 bg-enzobay-orange text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                    {wishlistCount > 9 ? '9+' : wishlistCount}
+                  </span>
+                )}
+              </Link>
+              <Link 
+                to="/cart" 
+                className="text-enzobay-blue hover:text-enzobay-blue-dark relative"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <div className="flex flex-col items-center">
+                  <ShoppingCart className="h-6 w-6" />
+                  <span className="mt-1 text-xs">Cart</span>
+                </div>
+                {cartCount > 0 && (
+                  <span className="absolute top-0 right-5 bg-enzobay-orange text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
               </Link>
             </div>
-            
-            <div className="border-t border-enzobay-neutral-200 pt-4 mt-4">
-              <Link to="/account" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Account
-              </Link>
-              <Link to="/wishlist" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors flex items-center gap-2">
-                <Heart className="h-5 w-5" />
-                Wishlist
-              </Link>
-              <Link to="/cart" className="block py-2 text-enzobay-neutral-700 hover:text-enzobay-orange transition-colors flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" />
-                Cart
-              </Link>
-            </div>
-          </nav>
+          </div>
         </div>
       </div>
     </header>

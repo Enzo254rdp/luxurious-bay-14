@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useCartStore } from "../lib/store";
 import { formatPrice } from "../lib/utils";
-import { CheckCircle, ChevronRight, CreditCard, Shield, Truck } from "lucide-react";
+import { CheckCircle, ChevronRight, CreditCard, Shield, Truck, Smartphone } from "lucide-react";
 
 export default function CheckoutPage() {
   const { items, getCartTotal, clearCart } = useCartStore();
@@ -21,7 +21,7 @@ export default function CheckoutPage() {
     region: "",
     postalCode: "",
     phone: "",
-    paymentMethod: "card",
+    paymentMethod: "mpesa", // Default to M-Pesa
     saveInfo: true,
     deliveryMethod: "standard"
   });
@@ -243,6 +243,7 @@ export default function CheckoutPage() {
                           ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                           : 'border-enzobay-neutral-300 focus:border-enzobay-blue focus:ring-enzobay-blue'
                       }`}
+                      placeholder="07XX XXX XXX"
                     />
                     {formErrors.phone && (
                       <p className="mt-1 text-sm text-red-600">{formErrors.phone}</p>
@@ -453,7 +454,49 @@ export default function CheckoutPage() {
                 </h2>
                 
                 <div className="space-y-4">
-                  <div className="relative bg-enzobay-neutral-50 rounded-lg p-4 flex items-start border-2 border-enzobay-blue">
+                  {/* M-Pesa (Primary) */}
+                  <div className="relative bg-green-50 rounded-lg p-4 flex items-start border-2 border-green-500">
+                    <div className="flex items-center h-5">
+                      <input
+                        id="payment-mpesa"
+                        name="paymentMethod"
+                        type="radio"
+                        value="mpesa"
+                        checked={formData.paymentMethod === 'mpesa'}
+                        onChange={handleRadioChange}
+                        className="h-4 w-4 text-green-600 border-enzobay-neutral-300 focus:ring-green-500"
+                      />
+                    </div>
+                    <div className="ml-3 flex-1">
+                      <label htmlFor="payment-mpesa" className="font-medium text-enzobay-neutral-900">
+                        M-Pesa
+                      </label>
+                      <p className="text-enzobay-neutral-500 text-sm">
+                        Pay using your M-Pesa mobile money
+                      </p>
+                      {formData.paymentMethod === 'mpesa' && (
+                        <div className="mt-3 bg-white p-3 rounded-md border border-green-200">
+                          <p className="text-sm text-gray-700 mb-2">Follow these steps:</p>
+                          <ol className="text-sm text-gray-600 list-decimal pl-5">
+                            <li>Go to M-Pesa on your phone</li>
+                            <li>Select "Lipa na M-Pesa"</li>
+                            <li>Select "Pay Bill"</li>
+                            <li>Enter Business No: <span className="font-medium">247247</span></li>
+                            <li>Enter Account No: <span className="font-medium">EnzoBay</span></li>
+                            <li>Enter Amount: <span className="font-medium">{formatPrice(total)}</span></li>
+                            <li>Enter your M-Pesa PIN</li>
+                            <li>You'll receive a confirmation SMS</li>
+                          </ol>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center">
+                      <Smartphone className="h-6 w-6 text-green-600" />
+                    </div>
+                  </div>
+                  
+                  {/* Credit/Debit Card */}
+                  <div className="relative bg-white rounded-lg p-4 flex items-start border border-enzobay-neutral-200">
                     <div className="flex items-center h-5">
                       <input
                         id="payment-card"
@@ -475,28 +518,6 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <CreditCard className="h-6 w-6 text-enzobay-neutral-500" />
-                    </div>
-                  </div>
-                  
-                  <div className="relative bg-white rounded-lg p-4 flex items-start border border-enzobay-neutral-200">
-                    <div className="flex items-center h-5">
-                      <input
-                        id="payment-mpesa"
-                        name="paymentMethod"
-                        type="radio"
-                        value="mpesa"
-                        checked={formData.paymentMethod === 'mpesa'}
-                        onChange={handleRadioChange}
-                        className="h-4 w-4 text-enzobay-blue border-enzobay-neutral-300 focus:ring-enzobay-blue"
-                      />
-                    </div>
-                    <div className="ml-3 flex-1">
-                      <label htmlFor="payment-mpesa" className="font-medium text-enzobay-neutral-900">
-                        M-Pesa
-                      </label>
-                      <p className="text-enzobay-neutral-500 text-sm">
-                        Pay using your M-Pesa mobile money
-                      </p>
                     </div>
                   </div>
                 </div>

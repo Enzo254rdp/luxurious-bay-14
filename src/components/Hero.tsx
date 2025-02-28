@@ -15,7 +15,8 @@ export default function Hero() {
       cta: "Shop Now",
       badge: "Limited Time Sale • Up to 50% Off",
       imageSrc: "https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      imageAlt: "Luxury shopping experience with high-end products"
+      imageAlt: "Luxury shopping experience with high-end products",
+      overlayColor: "from-black/70 to-transparent"
     },
     {
       title: "New Arrivals",
@@ -24,7 +25,8 @@ export default function Hero() {
       cta: "Discover More",
       badge: "Just Arrived",
       imageSrc: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      imageAlt: "Summer collection fashion accessories"
+      imageAlt: "Summer collection fashion accessories",
+      overlayColor: "from-black/70 via-black/50 to-transparent"
     },
     {
       title: "Exclusive Deals",
@@ -33,7 +35,8 @@ export default function Hero() {
       cta: "Join Now",
       badge: "Members Save 15% Extra",
       imageSrc: "https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      imageAlt: "VIP membership exclusive shopping"
+      imageAlt: "VIP membership exclusive shopping",
+      overlayColor: "from-enzobay-brown/80 to-transparent"
     }
   ];
 
@@ -85,9 +88,13 @@ export default function Hero() {
 
   return (
     <>
-      {/* Main Hero Section with Animation */}
+      {/* Advanced Hero Section with Better Text Visibility */}
       <section className="relative bg-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-enzobay-neutral-100/50 to-transparent z-10"></div>
+        {/* Dark Overlay for Text Readability with Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent z-10"></div>
+        
+        {/* Additional Gradient Overlay for Better Visibility */}
+        <div className={`absolute inset-0 bg-gradient-to-t ${slide.overlayColor} z-10 opacity-70`}></div>
         
         {/* Slide Background with Animation */}
         <div 
@@ -101,24 +108,24 @@ export default function Hero() {
         ></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-          <div className="pt-12 pb-20 md:pt-16 md:pb-28 lg:pt-20 lg:pb-32 min-h-[500px] md:min-h-[600px] flex flex-col justify-center">
-            <div className="max-w-xl">
+          <div className="pt-16 pb-24 md:pt-20 md:pb-32 lg:pt-24 lg:pb-40 min-h-[500px] md:min-h-[600px] flex flex-col justify-center">
+            <div className="max-w-xl bg-black/30 backdrop-blur-sm p-6 md:p-8 rounded-lg">
               <span 
-                className="inline-block bg-enzobay-orange/90 text-white text-sm font-semibold px-4 py-1.5 rounded-full mb-6 animate-fadeInUp opacity-0"
+                className="inline-block bg-enzobay-orange text-white text-sm font-semibold px-4 py-1.5 rounded-full mb-6 animate-fadeInUp opacity-0"
                 style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
               >
                 {slide.badge}
               </span>
               
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-enzobay-brown">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white">
                 <span 
-                  className="block animate-fadeInUp opacity-0" 
+                  className="block animate-fadeInUp opacity-0 drop-shadow-lg" 
                   style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}
                 >
                   {slide.title}
                 </span>
                 <span 
-                  className="block text-enzobay-blue animate-fadeInUp opacity-0" 
+                  className="block text-enzobay-orange animate-fadeInUp opacity-0 drop-shadow-lg" 
                   style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
                 >
                   {slide.subtitle}
@@ -126,7 +133,7 @@ export default function Hero() {
               </h1>
               
               <p 
-                className="mt-4 text-base md:text-lg text-enzobay-neutral-800 max-w-md animate-fadeInUp opacity-0" 
+                className="mt-4 text-base md:text-lg text-white max-w-md animate-fadeInUp opacity-0 drop-shadow" 
                 style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}
               >
                 {slide.description}
@@ -144,7 +151,7 @@ export default function Hero() {
                 </Link>
                 <Link
                   to="/products"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-enzobay-blue text-base font-medium rounded-md text-enzobay-blue bg-white hover:bg-enzobay-blue-50 transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md text-white bg-transparent hover:bg-white/20 transition-colors"
                 >
                   Browse Products
                 </Link>
@@ -335,7 +342,7 @@ export default function Hero() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-enzobay-brown">Secure Payments</h3>
-              <p className="mt-2 text-sm text-enzobay-neutral-600">Multiple payment methods</p>
+              <p className="mt-2 text-sm text-enzobay-neutral-600">M-Pesa and other methods</p>
             </div>
             
             {/* Benefit 4 */}
@@ -344,7 +351,7 @@ export default function Hero() {
                 <Clock className="h-8 w-8 text-enzobay-blue" />
               </div>
               <h3 className="text-lg font-semibold text-enzobay-brown">24/7 Support</h3>
-              <p className="mt-2 text-sm text-enzobay-neutral-600">Dedicated customer service</p>
+              <p className="mt-2 text-sm text-enzobay-neutral-600">Call us at 0792012904</p>
             </div>
           </div>
         </div>

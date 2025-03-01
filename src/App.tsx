@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import ProductPage from "./pages/ProductPage";
 import NotFound from "./pages/NotFound";
@@ -33,9 +33,23 @@ import OrdersPage from "./pages/OrdersPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import AdminBannerManager from "./pages/admin/BannerManager";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import FlashSaleManager from "./pages/admin/FlashSaleManager";
 import SellerDashboard from "./pages/seller/SellerDashboard";
 import SellerRegistration from "./pages/seller/SellerRegistration";
 import { useScrollToTop } from "./hooks/use-scroll";
+import { useAuthStore } from "./lib/auth-store";
+
+// Create a ProtectedRoute component for admin routes
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+  return isAuthenticated && user?.role === 'admin' ? children : <Navigate to="/login" />;
+};
+
+// Create a ProtectedRoute component for seller routes
+const SellerRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+  return isAuthenticated && user?.role === 'seller' ? children : <Navigate to="/seller/register" />;
+};
 
 const queryClient = new QueryClient();
 
@@ -85,12 +99,13 @@ const App = () => (
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
           
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/banners" element={<AdminBannerManager />} />
+          {/* Admin Routes - Protected */}
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="/admin/banners" element={<AdminRoute><AdminBannerManager /></AdminRoute>} />
+          <Route path="/admin/flash-sales" element={<AdminRoute><FlashSaleManager /></AdminRoute>} />
           
           {/* Seller Routes */}
-          <Route path="/seller" element={<SellerDashboard />} />
+          <Route path="/seller" element={<SellerRoute><SellerDashboard /></SellerRoute>} />
           <Route path="/seller/register" element={<SellerRegistration />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

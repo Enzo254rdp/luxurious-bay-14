@@ -39,17 +39,16 @@ import SellerRegistration from "./pages/seller/SellerRegistration";
 import { useScrollToTop } from "./hooks/use-scroll";
 import { useAuthStore } from "./lib/auth-store";
 
-// Create a ProtectedRoute component for admin routes
-const AdminRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuthStore();
-  return isAuthenticated && user?.role === 'admin' ? children : <Navigate to="/login" />;
-};
+// Temporarily disabled protected routes
+// const AdminRoute = ({ children }) => {
+//   const { isAuthenticated, user } = useAuthStore();
+//   return isAuthenticated && user?.role === 'admin' ? children : <Navigate to="/login" />;
+// };
 
-// Create a ProtectedRoute component for seller routes
-const SellerRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuthStore();
-  return isAuthenticated && user?.role === 'seller' ? children : <Navigate to="/seller/register" />;
-};
+// const SellerRoute = ({ children }) => {
+//   const { isAuthenticated, user } = useAuthStore();
+//   return isAuthenticated && user?.role === 'seller' ? children : <Navigate to="/seller/register" />;
+// };
 
 const queryClient = new QueryClient();
 
@@ -99,13 +98,13 @@ const App = () => (
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
           
-          {/* Admin Routes - Protected */}
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/banners" element={<AdminRoute><AdminBannerManager /></AdminRoute>} />
-          <Route path="/admin/flash-sales" element={<AdminRoute><FlashSaleManager /></AdminRoute>} />
+          {/* Admin Routes - Protected routes temporarily disabled */}
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/banners" element={<AdminBannerManager />} />
+          <Route path="/admin/flash-sales" element={<FlashSaleManager />} />
           
-          {/* Seller Routes */}
-          <Route path="/seller" element={<SellerRoute><SellerDashboard /></SellerRoute>} />
+          {/* Seller Routes - Protected routes temporarily disabled */}
+          <Route path="/seller" element={<SellerDashboard />} />
           <Route path="/seller/register" element={<SellerRegistration />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -6,12 +6,17 @@ import { PRODUCTS, Product } from "../lib/types";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useRecentlyViewedStore } from "../lib/store";
+import { useScrollToTop } from "../hooks/use-scroll";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addItem } = useRecentlyViewedStore();
+  
+  // Scroll to top on page navigation
+  useScrollToTop();
 
   useEffect(() => {
     // Simulate API fetch
@@ -23,13 +28,15 @@ export default function ProductPage() {
       
       if (foundProduct) {
         setProduct(foundProduct);
+        // Add to recently viewed
+        addItem(foundProduct);
       } else {
         setError("Product not found");
       }
       
       setLoading(false);
     }, 300);
-  }, [id]);
+  }, [id, addItem]);
 
   if (loading) {
     return (
@@ -49,7 +56,7 @@ export default function ProductPage() {
         <Navbar />
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
           <h2 className="text-2xl font-bold text-enzobay-brown mb-4">Product Not Found</h2>
-          <p className="text-enzobay-neutral-600 mb-8">The product you're looking for doesn't exist or has been removed.</p>
+          <p className="text-xl text-enzobay-neutral-600 mb-8">The product you're looking for doesn't exist or has been removed.</p>
           <a href="/" className="btn-primary">Back to Home</a>
         </div>
         <Footer />

@@ -1,351 +1,196 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Package, Truck, CheckCircle, Clock, AlertCircle, ChevronRight, Calendar, MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useScrollPosition } from "../hooks/use-scroll";
+
+import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useScrollToTop } from "../hooks/use-scroll";
 
-interface Order {
-  id: string;
-  orderNumber: string;
-  orderDate: string;
-  estimatedDelivery: string;
-  status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
-  items: {
-    name: string;
-    quantity: number;
-  }[];
-  shippingAddress: {
-    name: string;
+const OrderTrackingPage = () => {
+  useScrollToTop();
+  const [searchParams] = useSearchParams();
+  const orderNumber = searchParams.get("order");
+  const [trackingId, setTrackingId] = useState(orderNumber || "");
+  const [orderStatus, setOrderStatus] = useState<null | {
+    status: string;
+    date: string;
+    items: number;
+    total: string;
     address: string;
-    city: string;
-    state: string;
-    zip: string;
-  };
-  trackingDetails: {
-    carrier: string;
-    trackingNumber: string;
-    statusUpdates: {
-      location: string;
-      timestamp: string;
-      message: string;
-    }[];
-  };
-}
+    stages: { name: string; completed: boolean; date: string }[];
+  }>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-const mockOrders: Order[] = [
-  {
-    id: "1",
-    orderNumber: "EB12345",
-    orderDate: "2024-07-15",
-    estimatedDelivery: "2024-07-22",
-    status: "shipped",
-    items: [{ name: "Leather Wallet", quantity: 1 }],
-    shippingAddress: {
-      name: "John Doe",
-      address: "123 Main St",
-      city: "Anytown",
-      state: "CA",
-      zip: "91234",
-    },
-    trackingDetails: {
-      carrier: "FedEx",
-      trackingNumber: "1234567890",
-      statusUpdates: [
-        {
-          location: "Anytown, CA",
-          timestamp: "2024-07-16T08:00:00Z",
-          message: "Package received",
-        },
-        {
-          location: "Transit Facility, CA",
-          timestamp: "2024-07-17T14:00:00Z",
-          message: "In transit",
-        },
-        {
-          location: "Nearby City, CA",
-          timestamp: "2024-07-21T18:00:00Z",
-          message: "Arrived at destination",
-        },
-      ],
-    },
-  },
-  {
-    id: "2",
-    orderNumber: "EB67890",
-    orderDate: "2024-07-10",
-    estimatedDelivery: "2024-07-18",
-    status: "delivered",
-    items: [{ name: "Sunglasses", quantity: 1 }],
-    shippingAddress: {
-      name: "Jane Smith",
-      address: "456 Elm St",
-      city: "Springfield",
-      state: "IL",
-      zip: "62704",
-    },
-    trackingDetails: {
-      carrier: "UPS",
-      trackingNumber: "0987654321",
-      statusUpdates: [
-        {
-          location: "Springfield, IL",
-          timestamp: "2024-07-11T10:00:00Z",
-          message: "Package received",
-        },
-        {
-          location: "Transit Hub, IL",
-          timestamp: "2024-07-12T16:00:00Z",
-          message: "In transit",
-        },
-        {
-          location: "Springfield, IL",
-          timestamp: "2024-07-17T12:00:00Z",
-          message: "Out for delivery",
-        },
-        {
-          location: "Springfield, IL",
-          timestamp: "2024-07-18T09:00:00Z",
-          message: "Delivered",
-        },
-      ],
-    },
-  },
-  {
-    id: "3",
-    orderNumber: "EB24680",
-    orderDate: "2024-07-25",
-    estimatedDelivery: "2024-08-02",
-    status: "pending",
-    items: [{ name: "Running Shoes", quantity: 1 }],
-    shippingAddress: {
-      name: "Alice Johnson",
-      address: "789 Oak St",
-      city: "Denver",
-      state: "CO",
-      zip: "80202",
-    },
-    trackingDetails: {
-      carrier: "USPS",
-      trackingNumber: "5678901234",
-      statusUpdates: [],
-    },
-  },
-];
-
-export default function OrderTrackingPage() {
-  const { orderNumber } = useParams<{ orderNumber: string }>();
-  const [order, setOrder] = useState<Order | undefined>(undefined);
-  const { toast } = useToast();
-	const scrollPosition = useScrollPosition();
-
-  useEffect(() => {
-    if (orderNumber) {
-      const foundOrder = mockOrders.find((o) => o.orderNumber === orderNumber);
-      if (foundOrder) {
-        setOrder(foundOrder);
-      } else {
-        toast({
-          title: "Error",
-          description: "Order not found.",
-          variant: "destructive",
+  const handleTrackOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!trackingId.trim()) {
+      setError("Please enter a valid tracking ID");
+      return;
+    }
+    
+    setIsLoading(true);
+    setError("");
+    
+    // Simulate API call
+    setTimeout(() => {
+      // Mock data for demonstration
+      if (trackingId === "ABC123" || trackingId === "123456") {
+        setOrderStatus({
+          status: "In Transit",
+          date: "March 1, 2025",
+          items: 3,
+          total: "Ksh 12,500",
+          address: "123 Mombasa Road, Nairobi, Kenya",
+          stages: [
+            { name: "Order Placed", completed: true, date: "March 1, 2025" },
+            { name: "Processing", completed: true, date: "March 2, 2025" },
+            { name: "In Transit", completed: true, date: "March 3, 2025" },
+            { name: "Out for Delivery", completed: false, date: "" },
+            { name: "Delivered", completed: false, date: "" }
+          ]
         });
+      } else {
+        setError("No order found with this tracking ID. Please check and try again.");
+        setOrderStatus(null);
       }
-    }
-  }, [orderNumber, toast]);
-
-  if (!order) {
-    return (
-      <div className="min-h-screen flex flex-col bg-enzobay-neutral-50">
-        <Navbar />
-        <main className="flex-grow container mx-auto py-6 px-4">
-          <div className="text-center">
-            <AlertCircle className="mx-auto h-12 w-12 text-enzobay-neutral-500" />
-            <h1 className="mt-4 text-2xl font-bold text-enzobay-brown">
-              Order Not Found
-            </h1>
-            <p className="mt-2 text-enzobay-neutral-600">
-              We couldn't find an order with the number {orderNumber}. Please
-              double-check the order number and try again.
-            </p>
-            <Link
-              to="/"
-              className="mt-6 bg-enzobay-blue text-white py-2 px-4 rounded-md inline-block hover:bg-enzobay-blue-dark"
-            >
-              Return to Homepage
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "text-enzobay-orange";
-      case "shipped":
-        return "text-enzobay-blue";
-      case "delivered":
-        return "text-green-500";
-      case "cancelled":
-        return "text-red-500";
-      default:
-        return "text-enzobay-neutral-500";
-    }
+      
+      setIsLoading(false);
+    }, 1500);
   };
-
-  const trackingSteps = [
-    {
-      status: "pending",
-      label: "Order Placed",
-      icon: Clock,
-      isCompleted: order.status !== "pending",
-    },
-    {
-      status: "shipped",
-      label: "Shipped",
-      icon: Truck,
-      isCompleted: order.status !== "pending" && order.status !== "shipped",
-    },
-    {
-      status: "delivered",
-      label: "Delivered",
-      icon: CheckCircle,
-      isCompleted: order.status === "delivered",
-    },
-  ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-enzobay-neutral-50">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-
-      <main className="flex-grow container mx-auto py-6 px-4">
-        <Link
-          to="/"
-          className="inline-flex items-center text-enzobay-blue hover:text-enzobay-blue-dark mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Homepage
-        </Link>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-enzobay-brown mb-4">
-            Order Tracking
-          </h1>
-
-          <div className="md:flex md:justify-between md:items-center mb-4">
-            <div>
-              <h2 className="text-xl font-semibold text-enzobay-neutral-800">
-                Order # {order.orderNumber}
-              </h2>
-              <p className="text-enzobay-neutral-600">
-                Order Date:{" "}
-                <span className="font-medium">{order.orderDate}</span>
-              </p>
-              <p className="text-enzobay-neutral-600">
-                Estimated Delivery:{" "}
-                <span className="font-medium">{order.estimatedDelivery}</span>
-              </p>
-              <p className="text-enzobay-neutral-600">
-                Status:{" "}
-                <span className={`font-medium ${getStatusColor(order.status)}`}>
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                </span>
-              </p>
+      
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-enzobay-brown mb-8 text-center">
+          Track Your Order
+        </h1>
+        
+        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8">
+          <form onSubmit={handleTrackOrder} className="mb-8">
+            <div className="mb-4">
+              <label htmlFor="tracking-id" className="block text-enzobay-neutral-700 mb-2">
+                Order/Tracking Number
+              </label>
+              <input
+                type="text"
+                id="tracking-id"
+                value={trackingId}
+                onChange={(e) => setTrackingId(e.target.value)}
+                placeholder="Enter your order or tracking number"
+                className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+              />
             </div>
-
-            <div className="mt-4 md:mt-0">
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  order.shippingAddress.address +
-                    ", " +
-                    order.shippingAddress.city +
-                    ", " +
-                    order.shippingAddress.state +
-                    " " +
-                    order.shippingAddress.zip
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center bg-enzobay-blue text-white py-2 px-4 rounded-md hover:bg-enzobay-blue-dark"
-              >
-                <MapPin className="mr-2 h-4 w-4" />
-                View Shipping Address
-              </a>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-enzobay-neutral-800 mb-2">
-              Tracking Progress
-            </h3>
-            <div className="flex items-center justify-between">
-              {trackingSteps.map((step, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div
-                    className={`rounded-full border-2 h-8 w-8 flex items-center justify-center z-10 ${
-                      step.isCompleted
-                        ? "bg-green-100 border-green-500 text-green-500"
-                        : order.status === step.status
-                        ? "bg-enzobay-blue-100 border-enzobay-blue text-enzobay-blue"
-                        : "border-enzobay-neutral-300 text-enzobay-neutral-500"
-                    }`}
-                  >
-                    <step.icon className="h-4 w-4" />
-                  </div>
-                  <p className="text-sm text-enzobay-neutral-600 mt-1">
-                    {step.label}
-                  </p>
-                  {index < trackingSteps.length - 1 && (
-                    <div
-                      className={`flex-grow h-0.5 ${
-                        step.isCompleted
-                          ? "bg-green-500"
-                          : order.status === step.status
-                          ? "bg-enzobay-blue"
-                          : "bg-enzobay-neutral-300"
-                      }`}
-                    ></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold text-enzobay-neutral-800 mb-2">
-              Tracking Updates
-            </h3>
-            {order.trackingDetails.statusUpdates.length > 0 ? (
-              <ul className="space-y-4">
-                {order.trackingDetails.statusUpdates.map((update, index) => (
-                  <li key={index} className="relative pl-6">
-                    <div className="absolute top-0 left-0 flex w-5 h-5 bg-enzobay-blue-100 rounded-full items-center justify-center">
-                      <CheckCircle className="h-3 w-3 text-enzobay-blue" />
-                    </div>
-                    <div className="text-enzobay-neutral-700 font-medium">
-                      {update.message}
-                    </div>
-                    <div className="text-sm text-enzobay-neutral-500">
-                      {new Date(update.timestamp).toLocaleString()} -{" "}
-                      {update.location}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-enzobay-neutral-500">
-                No tracking updates available yet. Please check back later.
-              </p>
+            
+            {error && (
+              <div className="mb-4 text-red-600 bg-red-50 p-3 rounded-md text-sm">
+                {error}
+              </div>
             )}
-          </div>
+            
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-enzobay-blue hover:bg-enzobay-blue-dark text-white font-medium rounded-md px-4 py-3 transition-colors duration-300"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                "Track Order"
+              )}
+            </button>
+          </form>
+          
+          {orderStatus && (
+            <div className="border-t border-enzobay-neutral-200 pt-6">
+              <div className="flex justify-between items-start mb-6 flex-wrap">
+                <div>
+                  <h2 className="font-semibold text-lg text-enzobay-brown">Order Status: <span className="text-enzobay-blue">{orderStatus.status}</span></h2>
+                  <p className="text-enzobay-neutral-600">Order Date: {orderStatus.date}</p>
+                </div>
+                <div className="mt-4 sm:mt-0">
+                  <p className="text-enzobay-neutral-600">Items: {orderStatus.items}</p>
+                  <p className="text-enzobay-neutral-600">Total: {orderStatus.total}</p>
+                </div>
+              </div>
+              
+              <div className="mb-6">
+                <h3 className="font-medium text-enzobay-neutral-800 mb-2">Shipping Address:</h3>
+                <p className="text-enzobay-neutral-600">{orderStatus.address}</p>
+              </div>
+              
+              <div>
+                <h3 className="font-medium text-enzobay-neutral-800 mb-4">Tracking Timeline:</h3>
+                <div className="relative">
+                  {/* Timeline line */}
+                  <div className="absolute top-0 left-3 bottom-0 w-0.5 bg-enzobay-neutral-200"></div>
+                  
+                  {/* Timeline stages */}
+                  <div className="space-y-6">
+                    {orderStatus.stages.map((stage, index) => (
+                      <div key={index} className="relative pl-10">
+                        {/* Stage indicator */}
+                        <div className={`absolute left-0 h-6 w-6 rounded-full flex items-center justify-center ${
+                          stage.completed ? "bg-enzobay-green-light border-2 border-enzobay-green" : "bg-white border-2 border-enzobay-neutral-300"
+                        }`}>
+                          {stage.completed && (
+                            <svg className="h-3 w-3 text-enzobay-green" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                        
+                        {/* Stage content */}
+                        <div>
+                          <h4 className={`font-medium ${stage.completed ? "text-enzobay-brown" : "text-enzobay-neutral-500"}`}>
+                            {stage.name}
+                          </h4>
+                          {stage.date && (
+                            <p className="text-sm text-enzobay-neutral-500">{stage.date}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-8 text-center">
+                <p className="text-enzobay-neutral-600 mb-4">
+                  Need help with your order?
+                </p>
+                <a
+                  href="/contact"
+                  className="inline-block bg-enzobay-neutral-100 hover:bg-enzobay-neutral-200 text-enzobay-neutral-800 px-4 py-2 rounded-md transition-colors duration-300"
+                >
+                  Contact Support
+                </a>
+              </div>
+            </div>
+          )}
+          
+          {!orderStatus && !isLoading && (
+            <div className="text-center py-6 text-enzobay-neutral-600">
+              <p>Enter your order number or tracking ID to view its current status.</p>
+              <p className="mt-2 text-sm">
+                Need help? <a href="/contact" className="text-enzobay-blue hover:underline">Contact our support team</a>
+              </p>
+            </div>
+          )}
         </div>
       </main>
-
+      
       <Footer />
     </div>
   );
-}
+};
+
+export default OrderTrackingPage;

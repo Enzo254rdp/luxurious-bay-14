@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export function useScrollPosition() {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -16,4 +17,15 @@ export function useScrollPosition() {
   }, []);
 
   return scrollPosition;
+}
+
+// Scroll to top when navigating to a new page
+export function useScrollToTop() {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
 }

@@ -28,6 +28,9 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AccountPage from "./pages/AccountPage";
+import OrdersPage from "./pages/OrdersPage";
+import OrderTrackingPage from "./pages/OrderTrackingPage";
 import AdminBannerManager from "./pages/admin/BannerManager";
 
 const queryClient = new QueryClient();
@@ -60,6 +63,11 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/register-success" element={<RegisterSuccessPage />} />
+          
+          {/* User Account Routes */}
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/track-order" element={<OrderTrackingPage />} />
           
           {/* Shopping Routes */}
           <Route path="/cart" element={<CartPage />} />

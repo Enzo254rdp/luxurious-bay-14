@@ -1,593 +1,512 @@
 
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useToast } from "@/hooks/use-toast";
-import { formatPrice } from "../lib/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Package, CreditCard, LogOut, Settings, Heart } from "lucide-react";
+import { useScrollToTop } from "../hooks/use-scroll";
 
-// Mock user data - in a real app, this would come from your auth system
-const mockUser = {
-  id: "user-1",
+// Mock user data
+const USER = {
   name: "John Doe",
   email: "john.doe@example.com",
   phone: "+254 712 345 678",
-  avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   address: {
-    street: "123 Main St",
-    apartment: "Apt 4B",
+    street: "123 Mombasa Road",
     city: "Nairobi",
-    region: "Nairobi",
     postalCode: "00100",
-  },
-  memberSince: "January 2023",
+    country: "Kenya"
+  }
 };
 
-// Mock orders data - in a real app, this would come from your API
-const mockOrders = [
-  {
-    id: "order-1",
-    date: "May 15, 2024",
-    status: "Delivered",
-    total: 24500,
-    items: 3,
-    trackingNumber: "KE12345678"
-  },
-  {
-    id: "order-2",
-    date: "April 30, 2024",
-    status: "Processing",
-    total: 15000,
-    items: 1,
-    trackingNumber: "KE87654321"
-  },
-  {
-    id: "order-3",
-    date: "March 22, 2024",
-    status: "Cancelled",
-    total: 8500,
-    items: 2,
-    trackingNumber: null
+// Saved checkout information from local storage
+const getSavedCheckoutInfo = () => {
+  try {
+    const savedInfo = localStorage.getItem('enzobay-checkout-info');
+    return savedInfo ? JSON.parse(savedInfo) : null;
+  } catch (error) {
+    console.error('Error retrieving saved checkout info:', error);
+    return null;
   }
-];
+};
 
-export default function AccountPage() {
+const AccountPage = () => {
+  useScrollToTop();
   const [activeTab, setActiveTab] = useState("profile");
-  const [isEditing, setIsEditing] = useState(false);
-  const [savedAddresses, setSavedAddresses] = useState([mockUser.address]);
-  const [paymentMethods, setPaymentMethods] = useState([
-    { id: "payment-1", type: "mpesa", number: "+254 712 345 678", isDefault: true },
-    { id: "payment-2", type: "card", number: "**** **** **** 4242", isDefault: false }
-  ]);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    name: USER.name,
+    email: USER.email,
+    phone: USER.phone,
+    street: USER.address.street,
+    city: USER.address.city,
+    postalCode: USER.address.postalCode,
+    country: USER.address.country
+  });
   
-  useEffect(() => {
-    // Scroll to top when component mounts
-    window.scrollTo(0, 0);
-  }, []);
+  const savedCheckoutInfo = getSavedCheckoutInfo();
 
-  const handleLogout = () => {
-    // In a real app, this would clear authentication state
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out."
-    });
-    navigate("/");
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const [profileData, setProfileData] = useState({
-    name: mockUser.name,
-    email: mockUser.email,
-    phone: mockUser.phone,
-  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, you would send this data to your backend
+    console.log("Updated profile information:", formData);
+    // For now, we'll just toggle off edit mode
+    setEditMode(false);
+  };
 
-  const handleSaveProfile = () => {
-    // In a real app, this would send data to your API
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been updated."
-    });
-    setIsEditing(false);
+  const clearSavedCheckoutInfo = () => {
+    try {
+      localStorage.removeItem('enzobay-checkout-info');
+      // Force re-render
+      window.location.reload();
+    } catch (error) {
+      console.error('Error clearing saved checkout info:', error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-enzobay-neutral-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Sidebar */}
-            <div className="md:w-64 space-y-1 flex-shrink-0">
-              <div className="bg-white shadow-sm rounded-lg overflow-hidden p-4 mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden border border-enzobay-neutral-200">
-                    <img src={mockUser.avatar} alt="User avatar" className="h-full w-full object-cover" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium text-enzobay-brown">{mockUser.name}</h3>
-                    <p className="text-sm text-enzobay-neutral-500">Member since {mockUser.memberSince}</p>
-                  </div>
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Sidebar Navigation */}
+          <div className="md:w-64 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="text-center mb-6">
+                <div className="h-20 w-20 rounded-full bg-enzobay-blue text-white flex items-center justify-center mx-auto mb-3 text-xl font-bold">
+                  {USER.name.split(' ').map(n => n[0]).join('')}
                 </div>
+                <h2 className="text-lg font-semibold text-enzobay-brown">{USER.name}</h2>
+                <p className="text-sm text-enzobay-neutral-600">{USER.email}</p>
               </div>
               
-              <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                <div className="p-1">
-                  <button
-                    onClick={() => setActiveTab("profile")}
-                    className={`w-full flex items-center px-4 py-3 text-left text-sm rounded-md ${
-                      activeTab === "profile" 
-                        ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
-                        : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
-                    }`}
-                  >
-                    <User className="mr-3 h-5 w-5" />
-                    Profile
-                  </button>
-                  
-                  <button
-                    onClick={() => setActiveTab("orders")}
-                    className={`w-full flex items-center px-4 py-3 text-left text-sm rounded-md ${
-                      activeTab === "orders" 
-                        ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
-                        : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
-                    }`}
-                  >
-                    <Package className="mr-3 h-5 w-5" />
-                    My Orders
-                  </button>
-                  
-                  <button
-                    onClick={() => setActiveTab("wishlist")}
-                    className={`w-full flex items-center px-4 py-3 text-left text-sm rounded-md ${
-                      activeTab === "wishlist" 
-                        ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
-                        : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
-                    }`}
-                  >
-                    <Heart className="mr-3 h-5 w-5" />
-                    Wishlist
-                  </button>
-                  
-                  <button
-                    onClick={() => setActiveTab("addresses")}
-                    className={`w-full flex items-center px-4 py-3 text-left text-sm rounded-md ${
-                      activeTab === "addresses" 
-                        ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
-                        : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
-                    }`}
-                  >
-                    <CreditCard className="mr-3 h-5 w-5" />
-                    Addresses & Payments
-                  </button>
-                  
-                  <button
-                    onClick={() => setActiveTab("settings")}
-                    className={`w-full flex items-center px-4 py-3 text-left text-sm rounded-md ${
-                      activeTab === "settings" 
-                        ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
-                        : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
-                    }`}
-                  >
-                    <Settings className="mr-3 h-5 w-5" />
-                    Settings
-                  </button>
-                  
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center px-4 py-3 text-left text-sm text-red-500 hover:bg-red-50 rounded-md"
-                  >
-                    <LogOut className="mr-3 h-5 w-5" />
-                    Logout
-                  </button>
-                </div>
+              <nav>
+                <ul className="space-y-2">
+                  <li>
+                    <button
+                      onClick={() => setActiveTab("profile")}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeTab === "profile" 
+                          ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
+                          : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                      }`}
+                    >
+                      Profile
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setActiveTab("orders")}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeTab === "orders" 
+                          ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
+                          : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                      }`}
+                    >
+                      Orders
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setActiveTab("addresses")}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeTab === "addresses" 
+                          ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
+                          : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                      }`}
+                    >
+                      Addresses
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setActiveTab("wishlist")}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeTab === "wishlist" 
+                          ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
+                          : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                      }`}
+                    >
+                      Wishlist
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setActiveTab("security")}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeTab === "security" 
+                          ? "bg-enzobay-blue-light text-enzobay-blue font-medium" 
+                          : "text-enzobay-neutral-700 hover:bg-enzobay-neutral-100"
+                      }`}
+                    >
+                      Security
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+              
+              <div className="mt-6 pt-6 border-t border-enzobay-neutral-200">
+                <button className="w-full bg-enzobay-neutral-100 hover:bg-enzobay-neutral-200 text-enzobay-neutral-700 px-4 py-2 rounded-md transition-colors duration-300">
+                  Sign Out
+                </button>
               </div>
             </div>
-            
-            {/* Main content */}
-            <div className="flex-1">
+          </div>
+          
+          {/* Main Content */}
+          <div className="flex-1">
+            <div className="bg-white rounded-lg shadow-md p-6">
               {/* Profile Tab */}
               {activeTab === "profile" && (
-                <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    <h2 className="text-lg font-medium text-enzobay-brown mb-4">Profile Information</h2>
-                    
-                    {isEditing ? (
-                      <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-enzobay-brown">My Profile</h2>
+                    <button
+                      onClick={() => setEditMode(!editMode)}
+                      className="text-enzobay-blue hover:text-enzobay-blue-dark"
+                    >
+                      {editMode ? "Cancel" : "Edit"}
+                    </button>
+                  </div>
+                  
+                  {editMode ? (
+                    <form onSubmit={handleSubmit}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                          <label htmlFor="name" className="block text-sm font-medium text-enzobay-neutral-700">
+                          <label htmlFor="name" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
                             Full Name
                           </label>
                           <input
                             type="text"
                             id="name"
-                            value={profileData.name}
-                            onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                            className="mt-1 block w-full rounded-md border-enzobay-neutral-300 shadow-sm focus:border-enzobay-blue focus:ring-enzobay-blue sm:text-sm"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
                           />
                         </div>
-                        
                         <div>
-                          <label htmlFor="email" className="block text-sm font-medium text-enzobay-neutral-700">
+                          <label htmlFor="email" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
                             Email Address
                           </label>
                           <input
                             type="email"
                             id="email"
-                            value={profileData.email}
-                            onChange={(e) => setProfileData({...profileData, email: e.target.value})}
-                            className="mt-1 block w-full rounded-md border-enzobay-neutral-300 shadow-sm focus:border-enzobay-blue focus:ring-enzobay-blue sm:text-sm"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
                           />
                         </div>
-                        
                         <div>
-                          <label htmlFor="phone" className="block text-sm font-medium text-enzobay-neutral-700">
+                          <label htmlFor="phone" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
                             Phone Number
                           </label>
                           <input
                             type="tel"
                             id="phone"
-                            value={profileData.phone}
-                            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                            className="mt-1 block w-full rounded-md border-enzobay-neutral-300 shadow-sm focus:border-enzobay-blue focus:ring-enzobay-blue sm:text-sm"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
                           />
                         </div>
-                        
-                        <div className="flex space-x-3 pt-4">
-                          <button
-                            type="button"
-                            onClick={handleSaveProfile}
-                            className="rounded-md bg-enzobay-blue px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark focus:outline-none"
-                          >
-                            Save Changes
-                          </button>
-                          
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setProfileData({
-                                name: mockUser.name,
-                                email: mockUser.email,
-                                phone: mockUser.phone,
-                              });
-                              setIsEditing(false);
-                            }}
-                            className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-enzobay-neutral-700 shadow-sm ring-1 ring-inset ring-enzobay-neutral-300 hover:bg-enzobay-neutral-50"
-                          >
-                            Cancel
-                          </button>
+                        <div>
+                          <label htmlFor="street" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            Street Address
+                          </label>
+                          <input
+                            type="text"
+                            id="street"
+                            name="street"
+                            value={formData.street}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="city" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            City
+                          </label>
+                          <input
+                            type="text"
+                            id="city"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="postalCode" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            Postal Code
+                          </label>
+                          <input
+                            type="text"
+                            id="postalCode"
+                            name="postalCode"
+                            value={formData.postalCode}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="country" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            Country
+                          </label>
+                          <input
+                            type="text"
+                            id="country"
+                            name="country"
+                            value={formData.country}
+                            onChange={handleInputChange}
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
-                          <div className="sm:col-span-3">
-                            <h3 className="text-sm font-medium text-enzobay-neutral-500">Full name</h3>
-                            <p className="mt-1 text-sm text-enzobay-neutral-900">{profileData.name}</p>
-                          </div>
-                          
-                          <div className="sm:col-span-3">
-                            <h3 className="text-sm font-medium text-enzobay-neutral-500">Email address</h3>
-                            <p className="mt-1 text-sm text-enzobay-neutral-900">{profileData.email}</p>
-                          </div>
-                          
-                          <div className="sm:col-span-3">
-                            <h3 className="text-sm font-medium text-enzobay-neutral-500">Phone number</h3>
-                            <p className="mt-1 text-sm text-enzobay-neutral-900">{profileData.phone}</p>
-                          </div>
+                      
+                      <div className="flex justify-end">
+                        <button
+                          type="submit"
+                          className="bg-enzobay-blue hover:bg-enzobay-blue-dark text-white font-medium px-6 py-2 rounded-md transition-colors duration-300"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <h3 className="text-sm font-medium text-enzobay-neutral-500">Full Name</h3>
+                          <p className="mt-1">{USER.name}</p>
                         </div>
-                        
-                        <div className="pt-4">
-                          <button
-                            type="button"
-                            onClick={() => setIsEditing(true)}
-                            className="rounded-md bg-enzobay-blue px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark focus:outline-none"
-                          >
-                            Edit Profile
-                          </button>
+                        <div>
+                          <h3 className="text-sm font-medium text-enzobay-neutral-500">Email Address</h3>
+                          <p className="mt-1">{USER.email}</p>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium text-enzobay-neutral-500">Phone Number</h3>
+                          <p className="mt-1">{USER.phone}</p>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium text-enzobay-neutral-500">Address</h3>
+                          <p className="mt-1">
+                            {USER.address.street}, {USER.address.city}, {USER.address.postalCode}, {USER.address.country}
+                          </p>
                         </div>
                       </div>
-                    )}
-                  </div>
+                      
+                      {/* Saved Checkout Information */}
+                      {savedCheckoutInfo && (
+                        <div className="mt-8 pt-6 border-t border-enzobay-neutral-200">
+                          <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-semibold text-enzobay-brown">Saved Checkout Information</h3>
+                            <button 
+                              onClick={clearSavedCheckoutInfo}
+                              className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                              Clear
+                            </button>
+                          </div>
+                          
+                          <div className="bg-enzobay-neutral-50 rounded-md p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <h4 className="text-sm font-medium text-enzobay-neutral-500">Shipping Address</h4>
+                                <p className="mt-1 text-sm">
+                                  {savedCheckoutInfo.shippingAddress.street}, {savedCheckoutInfo.shippingAddress.city}, {savedCheckoutInfo.shippingAddress.postalCode}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-medium text-enzobay-neutral-500">Billing Address</h4>
+                                <p className="mt-1 text-sm">
+                                  {savedCheckoutInfo.billingAddress.street}, {savedCheckoutInfo.billingAddress.city}, {savedCheckoutInfo.billingAddress.postalCode}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-medium text-enzobay-neutral-500">Payment Method</h4>
+                                <p className="mt-1 text-sm">
+                                  {savedCheckoutInfo.paymentMethod}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-3">
+                              <p className="text-xs text-enzobay-neutral-500">
+                                This information will be used to pre-fill your checkout form. You can update it during checkout.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
               
               {/* Orders Tab */}
               {activeTab === "orders" && (
-                <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    <h2 className="text-lg font-medium text-enzobay-brown mb-4">My Orders</h2>
-                    
-                    {mockOrders.length > 0 ? (
-                      <div className="space-y-6">
-                        {mockOrders.map((order) => (
-                          <div key={order.id} className="border border-enzobay-neutral-200 rounded-lg overflow-hidden">
-                            <div className="bg-enzobay-neutral-50 px-4 py-3 flex flex-wrap items-center justify-between gap-y-2">
-                              <div>
-                                <span className="text-sm text-enzobay-neutral-500">Order {order.id}</span>
-                                <p className="text-sm font-medium text-enzobay-brown">{order.date}</p>
-                              </div>
-                              
-                              <div className="flex items-center space-x-3">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                                  order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}>
-                                  {order.status}
-                                </span>
-                                
-                                <Link
-                                  to={`/orders/${order.id}`}
-                                  className="text-sm font-medium text-enzobay-blue hover:text-enzobay-blue-dark"
-                                >
-                                  View Details
-                                </Link>
-                              </div>
-                            </div>
-                            
-                            <div className="px-4 py-3 border-t border-enzobay-neutral-200">
-                              <div className="flex flex-wrap justify-between gap-y-2">
-                                <div>
-                                  <p className="text-sm text-enzobay-neutral-500">{order.items} {order.items === 1 ? 'item' : 'items'}</p>
-                                  <p className="text-base font-medium text-enzobay-brown">{formatPrice(order.total)}</p>
-                                </div>
-                                
-                                {order.trackingNumber && (
-                                  <div>
-                                    <p className="text-sm text-enzobay-neutral-500">Tracking Number</p>
-                                    <p className="text-sm font-medium text-enzobay-brown">{order.trackingNumber}</p>
-                                  </div>
-                                )}
-                                
-                                <div className="w-full sm:w-auto flex space-x-2 mt-2 sm:mt-0">
-                                  {order.status === 'Delivered' && (
-                                    <button
-                                      type="button"
-                                      className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-enzobay-neutral-700 shadow-sm ring-1 ring-inset ring-enzobay-neutral-300 hover:bg-enzobay-neutral-50"
-                                    >
-                                      Buy Again
-                                    </button>
-                                  )}
-                                  
-                                  {order.status !== 'Cancelled' && (
-                                    <Link
-                                      to={`/orders/${order.id}/track`}
-                                      className="rounded-md bg-enzobay-blue px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-enzobay-blue-dark"
-                                    >
-                                      Track Order
-                                    </Link>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Package className="mx-auto h-12 w-12 text-enzobay-neutral-400" />
-                        <h3 className="mt-2 text-sm font-medium text-enzobay-neutral-900">No orders yet</h3>
-                        <p className="mt-1 text-sm text-enzobay-neutral-500">Get started by browsing our products.</p>
-                        <div className="mt-6">
-                          <Link
-                            to="/products"
-                            className="inline-flex items-center rounded-md bg-enzobay-blue px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark"
-                          >
-                            Browse Products
-                          </Link>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              
-              {/* Addresses & Payments Tab */}
-              {activeTab === "addresses" && (
                 <div>
-                  <Tabs defaultValue="addresses" className="w-full">
-                    <TabsList className="mb-4">
-                      <TabsTrigger value="addresses">Saved Addresses</TabsTrigger>
-                      <TabsTrigger value="payments">Payment Methods</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="addresses">
-                      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                        <div className="px-4 py-5 sm:p-6">
-                          <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-medium text-enzobay-brown">Saved Addresses</h2>
-                            <button
-                              type="button"
-                              className="text-sm font-medium text-enzobay-blue hover:text-enzobay-blue-dark"
-                            >
-                              + Add New Address
-                            </button>
-                          </div>
-                          
-                          <div className="space-y-4">
-                            {savedAddresses.map((address, index) => (
-                              <div key={index} className="border border-enzobay-neutral-200 rounded-lg p-4">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <p className="text-sm font-medium text-enzobay-brown">{mockUser.name}</p>
-                                    <p className="text-sm text-enzobay-neutral-700 mt-1">
-                                      {address.street}, {address.apartment}<br />
-                                      {address.city}, {address.region} {address.postalCode}
-                                    </p>
-                                    <p className="text-sm text-enzobay-neutral-700 mt-1">{mockUser.phone}</p>
-                                  </div>
-                                  
-                                  <div className="flex space-x-2">
-                                    <button className="text-sm text-enzobay-blue hover:text-enzobay-blue-dark">Edit</button>
-                                    <button className="text-sm text-red-500 hover:text-red-700">Delete</button>
-                                  </div>
-                                </div>
-                                
-                                {index === 0 && (
-                                  <div className="mt-3 pt-3 border-t border-enzobay-neutral-200">
-                                    <p className="text-sm text-enzobay-orange font-medium">Default Shipping Address</p>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="payments">
-                      <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                        <div className="px-4 py-5 sm:p-6">
-                          <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-medium text-enzobay-brown">Payment Methods</h2>
-                            <button
-                              type="button"
-                              className="text-sm font-medium text-enzobay-blue hover:text-enzobay-blue-dark"
-                            >
-                              + Add Payment Method
-                            </button>
-                          </div>
-                          
-                          <div className="space-y-4">
-                            {paymentMethods.map((method) => (
-                              <div key={method.id} className="border border-enzobay-neutral-200 rounded-lg p-4">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <p className="text-sm font-medium text-enzobay-brown">
-                                      {method.type === 'mpesa' ? 'M-Pesa' : 'Credit Card'}
-                                    </p>
-                                    <p className="text-sm text-enzobay-neutral-700 mt-1">{method.number}</p>
-                                  </div>
-                                  
-                                  <div className="flex space-x-2">
-                                    <button className="text-sm text-enzobay-blue hover:text-enzobay-blue-dark">Edit</button>
-                                    <button className="text-sm text-red-500 hover:text-red-700">Delete</button>
-                                  </div>
-                                </div>
-                                
-                                {method.isDefault && (
-                                  <div className="mt-3 pt-3 border-t border-enzobay-neutral-200">
-                                    <p className="text-sm text-enzobay-orange font-medium">Default Payment Method</p>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              )}
-              
-              {/* Settings Tab */}
-              {activeTab === "settings" && (
-                <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6">
-                    <h2 className="text-lg font-medium text-enzobay-brown mb-4">Account Settings</h2>
-                    
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-sm font-medium text-enzobay-neutral-900">Email Notifications</h3>
-                        <div className="mt-2 space-y-2">
-                          <div className="flex items-start">
-                            <div className="flex items-center h-5">
-                              <input
-                                id="order-updates"
-                                name="order-updates"
-                                type="checkbox"
-                                defaultChecked
-                                className="h-4 w-4 rounded border-enzobay-neutral-300 text-enzobay-blue focus:ring-enzobay-blue"
-                              />
-                            </div>
-                            <div className="ml-3 text-sm">
-                              <label htmlFor="order-updates" className="font-medium text-enzobay-neutral-700">Order updates</label>
-                              <p className="text-enzobay-neutral-500">Get notified about your order status changes.</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-start">
-                            <div className="flex items-center h-5">
-                              <input
-                                id="promotions"
-                                name="promotions"
-                                type="checkbox"
-                                defaultChecked
-                                className="h-4 w-4 rounded border-enzobay-neutral-300 text-enzobay-blue focus:ring-enzobay-blue"
-                              />
-                            </div>
-                            <div className="ml-3 text-sm">
-                              <label htmlFor="promotions" className="font-medium text-enzobay-neutral-700">Promotions and deals</label>
-                              <p className="text-enzobay-neutral-500">Receive information about deals and promotions.</p>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-start">
-                            <div className="flex items-center h-5">
-                              <input
-                                id="newsletter"
-                                name="newsletter"
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-enzobay-neutral-300 text-enzobay-blue focus:ring-enzobay-blue"
-                              />
-                            </div>
-                            <div className="ml-3 text-sm">
-                              <label htmlFor="newsletter" className="font-medium text-enzobay-neutral-700">Newsletter</label>
-                              <p className="text-enzobay-neutral-500">Receive our weekly newsletter.</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="pt-4 border-t border-enzobay-neutral-200">
-                        <h3 className="text-sm font-medium text-enzobay-neutral-900">Password</h3>
-                        <div className="mt-2">
-                          <button
-                            type="button"
-                            className="rounded-md bg-enzobay-blue px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark focus:outline-none"
-                          >
-                            Change Password
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="pt-4 border-t border-enzobay-neutral-200">
-                        <h3 className="text-sm font-medium text-enzobay-neutral-900 mb-2">Delete Account</h3>
-                        <p className="text-sm text-enzobay-neutral-500 mb-4">
-                          Once you delete your account, there is no going back. Please be certain.
-                        </p>
-                        <button
-                          type="button"
-                          className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus:outline-none"
-                        >
-                          Delete Account
-                        </button>
-                      </div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-enzobay-brown">My Orders</h2>
+                  </div>
+                  
+                  <div className="border border-enzobay-neutral-200 rounded-md overflow-hidden">
+                    <div className="p-6 text-center">
+                      <h3 className="text-lg font-medium text-enzobay-brown mb-4">View Your Order History</h3>
+                      <p className="text-enzobay-neutral-600 mb-6">
+                        Track, view and manage all your orders in one place.
+                      </p>
+                      <Link
+                        to="/orders"
+                        className="inline-block bg-enzobay-blue hover:bg-enzobay-blue-dark text-white font-medium px-6 py-2 rounded-md transition-colors duration-300"
+                      >
+                        View Orders
+                      </Link>
                     </div>
                   </div>
                 </div>
               )}
               
-              {/* Wishlist Tab - Link to the actual wishlist page */}
+              {/* Addresses Tab */}
+              {activeTab === "addresses" && (
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-enzobay-brown">My Addresses</h2>
+                    <button className="text-enzobay-blue hover:text-enzobay-blue-dark">
+                      Add New
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="border border-enzobay-neutral-200 rounded-md p-4">
+                      <div className="flex justify-between mb-2">
+                        <h3 className="font-medium">Default Address</h3>
+                        <div className="flex space-x-2">
+                          <button className="text-enzobay-blue hover:text-enzobay-blue-dark text-sm">Edit</button>
+                          <button className="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-enzobay-neutral-700">
+                        {USER.name}<br />
+                        {USER.address.street}<br />
+                        {USER.address.city}, {USER.address.postalCode}<br />
+                        {USER.address.country}<br />
+                        {USER.phone}
+                      </p>
+                    </div>
+                    
+                    <div className="border border-dashed border-enzobay-neutral-300 rounded-md p-4 flex items-center justify-center">
+                      <button className="text-enzobay-blue hover:text-enzobay-blue-dark">
+                        + Add New Address
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Wishlist Tab */}
               {activeTab === "wishlist" && (
-                <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-                  <div className="px-4 py-5 sm:p-6 text-center">
-                    <Heart className="mx-auto h-12 w-12 text-enzobay-neutral-400" />
-                    <h3 className="mt-2 text-lg font-medium text-enzobay-brown">Your Wishlist</h3>
-                    <p className="mt-1 text-enzobay-neutral-500">
-                      View all your saved items in one place.
-                    </p>
-                    <div className="mt-6">
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-enzobay-brown">My Wishlist</h2>
+                  </div>
+                  
+                  <div className="border border-enzobay-neutral-200 rounded-md overflow-hidden">
+                    <div className="p-6 text-center">
+                      <h3 className="text-lg font-medium text-enzobay-brown mb-4">View Your Wishlist</h3>
+                      <p className="text-enzobay-neutral-600 mb-6">
+                        See all the products you've saved for later.
+                      </p>
                       <Link
                         to="/wishlist"
-                        className="inline-flex items-center rounded-md bg-enzobay-blue px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-enzobay-blue-dark"
+                        className="inline-block bg-enzobay-blue hover:bg-enzobay-blue-dark text-white font-medium px-6 py-2 rounded-md transition-colors duration-300"
                       >
-                        Go to Wishlist
+                        View Wishlist
                       </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Security Tab */}
+              {activeTab === "security" && (
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-bold text-enzobay-brown">Security</h2>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-medium text-enzobay-brown mb-3">Change Password</h3>
+                      <form className="space-y-4">
+                        <div>
+                          <label htmlFor="current-password" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            Current Password
+                          </label>
+                          <input
+                            type="password"
+                            id="current-password"
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="new-password" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            New Password
+                          </label>
+                          <input
+                            type="password"
+                            id="new-password"
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="confirm-password" className="block text-sm font-medium text-enzobay-neutral-700 mb-1">
+                            Confirm New Password
+                          </label>
+                          <input
+                            type="password"
+                            id="confirm-password"
+                            className="w-full border border-enzobay-neutral-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-enzobay-blue focus:border-transparent"
+                          />
+                        </div>
+                        <div>
+                          <button
+                            type="submit"
+                            className="bg-enzobay-blue hover:bg-enzobay-blue-dark text-white font-medium px-4 py-2 rounded-md transition-colors duration-300"
+                          >
+                            Update Password
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                    
+                    <div className="border-t border-enzobay-neutral-200 pt-6">
+                      <h3 className="font-medium text-enzobay-brown mb-3">Two-Factor Authentication</h3>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-enzobay-neutral-600">Add an extra layer of security to your account</p>
+                        </div>
+                        <button className="bg-enzobay-neutral-100 hover:bg-enzobay-neutral-200 text-enzobay-neutral-700 px-4 py-2 rounded-md transition-colors duration-300">
+                          Enable
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-enzobay-neutral-200 pt-6">
+                      <h3 className="font-medium text-red-600 mb-3">Delete Account</h3>
+                      <p className="text-enzobay-neutral-600 mb-4">
+                        Once you delete your account, there is no going back. Please be certain.
+                      </p>
+                      <button className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-md transition-colors duration-300">
+                        Delete My Account
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -600,4 +519,6 @@ export default function AccountPage() {
       <Footer />
     </div>
   );
-}
+};
+
+export default AccountPage;

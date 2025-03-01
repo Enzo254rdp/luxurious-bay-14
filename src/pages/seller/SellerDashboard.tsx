@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useScrollToTop } from "../../hooks/use-scroll";
@@ -31,7 +31,9 @@ import {
   ChevronDown,
   Download,
   Image as ImageIcon,
-  Loader2
+  Loader2,
+  Percent,
+  Star
 } from "lucide-react";
 import { 
   DropdownMenu,
@@ -42,6 +44,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
+import { CATEGORIES, PRODUCT_CATEGORIES } from "../../lib/types";
 
 // Mock API endpoints and utility functions
 const API_ENDPOINTS = {
@@ -51,19 +54,11 @@ const API_ENDPOINTS = {
   uploadImage: "/api/upload/image",
 };
 
-// Product categories
-const PRODUCT_CATEGORIES = [
-  { id: "handmade", name: "Handmade Crafts" },
-  { id: "jewelry", name: "Jewelry & Accessories" },
-  { id: "clothing", name: "Clothing & Apparel" },
-  { id: "homegoods", name: "Home & Living" },
-  { id: "art", name: "Art & Collectibles" },
-  { id: "beauty", name: "Beauty & Personal Care" },
-  { id: "food", name: "Food & Beverages" },
-  { id: "supplies", name: "Craft Supplies" },
-  { id: "toys", name: "Toys & Games" },
-  { id: "vintage", name: "Vintage Items" },
-];
+// Product categories - now using platform's centralized categories
+const productCategories = CATEGORIES.map(category => ({
+  id: category.id.toLowerCase(),
+  name: category.name
+}));
 
 // Mock fetch function (will be replaced with actual API calls)
 const fetchApi = async (endpoint: string, options = {}) => {
@@ -84,11 +79,11 @@ const SellerDashboard = () => {
   
   // State for products
   const [products, setProducts] = useState([
-    { id: 1, name: "Handmade Ceramic Pot", price: 2500, inventory: 15, status: "active", category: "homegoods", images: [], description: "Beautiful handcrafted ceramic pot" },
-    { id: 2, name: "Beaded Necklace", price: 1800, inventory: 8, status: "active", category: "jewelry", images: [], description: "Elegant beaded necklace with natural stones" },
-    { id: 3, name: "Wooden Wall Art", price: 3200, inventory: 6, status: "active", category: "art", images: [], description: "Modern wooden wall art piece" },
-    { id: 4, name: "Organic Face Scrub", price: 850, inventory: 24, status: "active", category: "beauty", images: [], description: "Natural organic face scrub with essential oils" },
-    { id: 5, name: "Leather Journal", price: 1200, inventory: 0, status: "out_of_stock", category: "supplies", images: [], description: "Handmade leather journal with recycled paper" },
+    { id: 1, name: "Handmade Ceramic Pot", price: 2500, inventory: 15, status: "active", category: "home", images: [], description: "Beautiful handcrafted ceramic pot", isNew: true, discount: 0, isFeatured: false },
+    { id: 2, name: "Beaded Necklace", price: 1800, inventory: 8, status: "active", category: "accessories", images: [], description: "Elegant beaded necklace with natural stones", isNew: false, discount: 10, isFeatured: true },
+    { id: 3, name: "Wooden Wall Art", price: 3200, inventory: 6, status: "active", category: "art", images: [], description: "Modern wooden wall art piece", isNew: false, discount: 0, isFeatured: false },
+    { id: 4, name: "Organic Face Scrub", price: 850, inventory: 24, status: "active", category: "beauty", images: [], description: "Natural organic face scrub with essential oils", isNew: true, discount: 15, isFeatured: true },
+    { id: 5, name: "Leather Journal", price: 1200, inventory: 0, status: "out_of_stock", category: "supplies", images: [], description: "Handmade leather journal with recycled paper", isNew: false, discount: 0, isFeatured: false },
   ]);
   
   // State for orders
@@ -122,7 +117,9 @@ const SellerDashboard = () => {
     inventory: "",
     category: "",
     tags: "",
-    featured: false,
+    isFeatured: false,
+    isNew: false,
+    discount: "",
     images: [] as string[],
     variants: [] as {name: string, options: string[]}[],
     specifications: [] as {name: string, value: string}[],
@@ -161,6 +158,10 @@ const SellerDashboard = () => {
   // Specification management
   const [currentSpec, setCurrentSpec] = useState({ name: "", value: "" });
   
+  // Tag management
+  const [tags, setTags] = useState<string[]>([]);
+  const [currentTag, setCurrentTag] = useState("");
+  
   // Filtered products
   const filteredProducts = products.filter(product => {
     // Apply search filter
@@ -187,6 +188,20 @@ const SellerDashboard = () => {
     
     return matchesSearch && matchesStatus;
   });
+
+  // Function to handle tag input
+  const handleAddTag = () => {
+    if (!currentTag.trim()) return;
+    
+    if (!tags.includes(currentTag)) {
+      setTags([...tags, currentTag]);
+    }
+    setCurrentTag("");
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
   
   // Handlers for product management
   const handleAddProduct = async () => {
@@ -194,10 +209,16 @@ const SellerDashboard = () => {
     
     // In a real app, you would send this to an API
     try {
+      // Format tags for sending to API
+      const productTags = tags.length > 0 ? tags : [];
+      
       // Simulate API call
       await fetchApi(API_ENDPOINTS.products, {
         method: 'POST',
-        body: JSON.stringify(newProduct)
+        body: JSON.stringify({
+          ...newProduct,
+          tags: productTags
+        })
       });
       
       const createdProduct = {
@@ -208,7 +229,10 @@ const SellerDashboard = () => {
         status: parseInt(newProduct.inventory) > 0 ? "active" : "out_of_stock",
         category: newProduct.category,
         images: newProduct.images,
-        description: newProduct.description
+        description: newProduct.description,
+        isNew: newProduct.isNew,
+        discount: newProduct.discount ? parseInt(newProduct.discount) : 0,
+        isFeatured: newProduct.isFeatured
       };
       
       setProducts([...products, createdProduct]);
@@ -235,10 +259,16 @@ const SellerDashboard = () => {
     setProductFormLoading(true);
     
     try {
+      // Format tags for sending to API
+      const productTags = tags.length > 0 ? tags : [];
+      
       // Simulate API call
       await fetchApi(`${API_ENDPOINTS.products}/${selectedProduct.id}`, {
         method: 'PUT',
-        body: JSON.stringify(newProduct)
+        body: JSON.stringify({
+          ...newProduct,
+          tags: productTags
+        })
       });
       
       const updatedProduct = {
@@ -249,7 +279,10 @@ const SellerDashboard = () => {
         status: parseInt(newProduct.inventory) > 0 ? "active" : "out_of_stock",
         category: newProduct.category,
         images: newProduct.images,
-        description: newProduct.description
+        description: newProduct.description,
+        isNew: newProduct.isNew,
+        discount: newProduct.discount ? parseInt(newProduct.discount) : 0,
+        isFeatured: newProduct.isFeatured
       };
       
       setProducts(products.map(p => 
@@ -305,7 +338,9 @@ const SellerDashboard = () => {
       inventory: product.inventory.toString(),
       category: product.category || "",
       tags: "",
-      featured: false,
+      isFeatured: product.isFeatured || false,
+      isNew: product.isNew || false,
+      discount: product.discount ? product.discount.toString() : "",
       images: product.images || [],
       variants: [],
       specifications: [],
@@ -319,6 +354,8 @@ const SellerDashboard = () => {
         freeShipping: false,
       },
     });
+    // Load any existing tags
+    setTags(product.tags || []);
     setIsEditingProduct(true);
   };
   
@@ -326,6 +363,7 @@ const SellerDashboard = () => {
     setIsAddingProduct(false);
     setIsEditingProduct(false);
     setSelectedProduct(null);
+    setTags([]);
     setNewProduct({
       name: "",
       description: "",
@@ -334,7 +372,9 @@ const SellerDashboard = () => {
       inventory: "",
       category: "",
       tags: "",
-      featured: false,
+      isFeatured: false,
+      isNew: false,
+      discount: "",
       images: [],
       variants: [],
       specifications: [],
@@ -502,9 +542,16 @@ const SellerDashboard = () => {
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-          Seller Dashboard
-        </h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Seller Dashboard
+          </h1>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleNavigateToSellerRegistration}>
+              Seller Profile
+            </Button>
+          </div>
+        </div>
         <p className="text-gray-600 mb-8">
           Manage your products, orders, and track your sales performance
         </p>
@@ -604,7 +651,7 @@ const SellerDashboard = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {PRODUCT_CATEGORIES.map(category => (
+                    {productCategories.map(category => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
@@ -627,13 +674,14 @@ const SellerDashboard = () => {
                     <TableHead>Price</TableHead>
                     <TableHead>Inventory</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Tags</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {productsLoading ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
+                      <TableCell colSpan={6} className="text-center py-8">
                         <div className="flex justify-center">
                           <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                         </div>
@@ -642,7 +690,7 @@ const SellerDashboard = () => {
                     </TableRow>
                   ) : filteredProducts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
+                      <TableCell colSpan={6} className="text-center py-8">
                         <p className="text-gray-500">No products found</p>
                         <Button 
                           variant="link" 
@@ -656,13 +704,46 @@ const SellerDashboard = () => {
                   ) : (
                     filteredProducts.map((product) => (
                       <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>Ksh {product.price.toLocaleString()}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center space-x-2">
+                            <span>{product.name}</span>
+                            {product.isNew && (
+                              <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">New</Badge>
+                            )}
+                            {product.isFeatured && (
+                              <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200">Featured</Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            {product.discount > 0 ? (
+                              <>
+                                <span className="line-through text-gray-400">Ksh {product.price.toLocaleString()}</span>
+                                <span className="font-medium">
+                                  Ksh {(product.price * (1 - product.discount / 100)).toLocaleString()}
+                                </span>
+                                <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
+                                  {product.discount}% off
+                                </Badge>
+                              </>
+                            ) : (
+                              <span>Ksh {product.price.toLocaleString()}</span>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>{product.inventory}</TableCell>
                         <TableCell>
                           <Badge variant={product.status === "active" ? "default" : "destructive"} className={product.status === "active" ? "bg-green-100 text-green-800 hover:bg-green-200" : ""}>
                             {product.status === "active" ? "Active" : "Out of Stock"}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {product.isNew && <Badge variant="outline" className="bg-blue-50">new</Badge>}
+                            {product.discount > 0 && <Badge variant="outline" className="bg-red-50">sale</Badge>}
+                            {product.isFeatured && <Badge variant="outline" className="bg-purple-50">featured</Badge>}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -948,7 +1029,7 @@ const SellerDashboard = () => {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PRODUCT_CATEGORIES.map(category => (
+                    {productCategories.map(category => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
@@ -981,13 +1062,15 @@ const SellerDashboard = () => {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="salePrice">Sale Price (Ksh)</Label>
+                <Label htmlFor="discount">Discount (%)</Label>
                 <Input 
-                  id="salePrice" 
+                  id="discount" 
                   type="number" 
                   placeholder="0"
-                  value={newProduct.salePrice}
-                  onChange={(e) => setNewProduct({...newProduct, salePrice: e.target.value})}
+                  min="0"
+                  max="100"
+                  value={newProduct.discount}
+                  onChange={(e) => setNewProduct({...newProduct, discount: e.target.value})}
                 />
               </div>
               <div className="grid gap-2">
@@ -1003,13 +1086,43 @@ const SellerDashboard = () => {
             </div>
             
             <div className="grid gap-2">
-              <Label htmlFor="tags">Tags (comma separated)</Label>
-              <Input 
-                id="tags" 
-                placeholder="handmade, ceramic, home decor"
-                value={newProduct.tags}
-                onChange={(e) => setNewProduct({...newProduct, tags: e.target.value})}
-              />
+              <Label htmlFor="tags">Tags</Label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    {tag}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-4 w-4 p-0 ml-1" 
+                      onClick={() => handleRemoveTag(tag)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  id="tag"
+                  placeholder="Add tag (press Enter or click Add)"
+                  value={currentTag}
+                  onChange={(e) => setCurrentTag(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleAddTag}
+                >
+                  Add
+                </Button>
+              </div>
             </div>
             
             <div className="grid gap-2">
@@ -1057,20 +1170,38 @@ const SellerDashboard = () => {
             </div>
             
             <div className="grid gap-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="featured" 
-                  checked={newProduct.featured}
-                  onCheckedChange={(checked) => 
-                    setNewProduct({...newProduct, featured: checked as boolean})
-                  }
-                />
-                <label
-                  htmlFor="featured"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Feature this product on homepage
-                </label>
+              <div className="flex flex-col space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="featured" 
+                    checked={newProduct.isFeatured}
+                    onCheckedChange={(checked) => 
+                      setNewProduct({...newProduct, isFeatured: checked as boolean})
+                    }
+                  />
+                  <label
+                    htmlFor="featured"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Feature this product on homepage
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="new" 
+                    checked={newProduct.isNew}
+                    onCheckedChange={(checked) => 
+                      setNewProduct({...newProduct, isNew: checked as boolean})
+                    }
+                  />
+                  <label
+                    htmlFor="new"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Mark as new product
+                  </label>
+                </div>
               </div>
             </div>
             

@@ -14,8 +14,29 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { PlusCircle, Package, ShoppingCart, DollarSign, Tag, Check, X, Edit, Trash2, Eye, ArrowUpRight } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { 
+  PlusCircle, 
+  Package, 
+  ShoppingCart, 
+  DollarSign, 
+  Tag, 
+  Check, 
+  X, 
+  Edit, 
+  Trash2, 
+  Eye, 
+  ArrowUpRight,
+  Search,
+  ChevronDown,
+  Download
+} from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 
 const SellerDashboard = () => {
@@ -247,7 +268,7 @@ const SellerDashboard = () => {
                       <TableCell>Ksh {product.price.toLocaleString()}</TableCell>
                       <TableCell>{product.inventory}</TableCell>
                       <TableCell>
-                        <Badge variant={product.status === "active" ? "success" : "destructive"}>
+                        <Badge variant={product.status === "active" ? "default" : "destructive"} className={product.status === "active" ? "bg-green-100 text-green-800 hover:bg-green-200" : ""}>
                           {product.status === "active" ? "Active" : "Out of Stock"}
                         </Badge>
                       </TableCell>
@@ -334,9 +355,15 @@ const SellerDashboard = () => {
                       <TableCell>
                         <Badge 
                           variant={
-                            order.status === "delivered" ? "success" : 
+                            order.status === "delivered" ? "outline" : 
                             order.status === "shipped" ? "outline" :
                             order.status === "processing" ? "secondary" : "default"
+                          }
+                          className={
+                            order.status === "delivered" ? "bg-green-100 text-green-800 hover:bg-green-200" : 
+                            order.status === "shipped" ? "bg-blue-100 text-blue-800 hover:bg-blue-200" :
+                            order.status === "processing" ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200" :
+                            "bg-gray-100 text-gray-800 hover:bg-gray-200"
                           }
                         >
                           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -399,7 +426,7 @@ const SellerDashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="name" />
                       <YAxis />
-                      <Tooltip />
+                      <RechartsTooltip />
                       <Bar dataKey="sales" fill="#82c91e" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>

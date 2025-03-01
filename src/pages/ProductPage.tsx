@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useRecentlyViewedStore } from "../lib/store";
 import { useScrollToTop } from "../hooks/use-scroll";
+import { useIsMobile } from "../hooks/use-mobile";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,7 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { addItem } = useRecentlyViewedStore();
+  const isMobile = useIsMobile();
   
   // Scroll to top on page navigation
   useScrollToTop();
@@ -30,8 +32,11 @@ export default function ProductPage() {
         setProduct(foundProduct);
         // Add to recently viewed
         addItem(foundProduct);
+        // Set page title to product name
+        document.title = `${foundProduct.name} | EnzoBay`;
       } else {
         setError("Product not found");
+        document.title = "Product Not Found | EnzoBay";
       }
       
       setLoading(false);
@@ -65,7 +70,7 @@ export default function ProductPage() {
   }
 
   return (
-    <div>
+    <div className={isMobile ? "product-page-mobile" : "product-page-desktop"}>
       <Navbar />
       <ProductDetail product={product} />
       <Footer />

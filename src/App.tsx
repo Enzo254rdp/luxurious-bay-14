@@ -32,6 +32,8 @@ import AccountPage from "./pages/AccountPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import AdminBannerManager from "./pages/admin/BannerManager";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import SellerDashboard from "./pages/seller/SellerDashboard";
 import { useScrollToTop } from "./hooks/use-scroll";
 
 const queryClient = new QueryClient();
@@ -83,7 +85,11 @@ const App = () => (
           <Route path="/order-success" element={<OrderSuccessPage />} />
           
           {/* Admin Routes */}
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/banners" element={<AdminBannerManager />} />
+          
+          {/* Seller Routes */}
+          <Route path="/seller" element={<SellerDashboard />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

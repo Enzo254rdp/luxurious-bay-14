@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -126,7 +125,62 @@
     hover:-translate-y-1 hover:shadow-enzobay-blue/10
     will-change-transform;
   }
-
+  
+  /* Mobile responsive design improvements */
+  @media (max-width: 640px) {
+    .product-card {
+      @apply max-w-[160px] mx-auto;
+    }
+    
+    .product-card .product-title {
+      @apply text-sm;
+    }
+    
+    .product-card .product-price {
+      @apply text-sm;
+    }
+    
+    .category-item {
+      @apply max-w-[140px] p-2;
+    }
+    
+    .category-item .category-title {
+      @apply text-xs;
+    }
+    
+    .hero-section {
+      @apply max-h-[300px] min-h-[200px];
+    }
+  }
+  
+  /* Small tablets */
+  @media (min-width: 641px) and (max-width: 768px) {
+    .product-card {
+      @apply max-w-[180px];
+    }
+    
+    .category-item {
+      @apply max-w-[160px];
+    }
+    
+    .hero-section {
+      @apply max-h-[350px] min-h-[250px];
+    }
+  }
+  
+  /* Product page specific styles */
+  .product-page-mobile .product-detail-image {
+    @apply max-h-[300px] object-contain mx-auto;
+  }
+  
+  .product-page-mobile .product-detail-info {
+    @apply px-4;
+  }
+  
+  .product-page-mobile .product-detail-tabs {
+    @apply text-sm;
+  }
+  
   .premium-input {
     @apply bg-enzobay-neutral-100 border-enzobay-neutral-300 rounded-lg px-4 py-2
     focus:ring-2 focus:ring-enzobay-blue focus:border-transparent

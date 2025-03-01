@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
@@ -358,8 +357,8 @@ const AccountPage = () => {
                   </div>
                   
                   <div className="border border-enzobay-neutral-200 rounded-md overflow-hidden">
-                    <div className="p-6 text-center">
-                      <h3 className="text-lg font-medium text-enzobay-brown mb-4">View Your Order History</h3>
+                    <div className="p-6">
+                      <h3 className="text-lg font-medium text-enzobay-brown mb-4">Order History</h3>
                       <p className="text-enzobay-neutral-600 mb-6">
                         Track, view and manage all your orders in one place.
                       </p>
@@ -367,7 +366,7 @@ const AccountPage = () => {
                         to="/orders"
                         className="inline-block bg-enzobay-blue hover:bg-enzobay-blue-dark text-white font-medium px-6 py-2 rounded-md transition-colors duration-300"
                       >
-                        View Orders
+                        View Complete Order History
                       </Link>
                     </div>
                   </div>

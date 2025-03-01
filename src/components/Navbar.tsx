@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useScrollPosition } from "../hooks/use-scroll";
@@ -20,6 +19,44 @@ export default function Navbar() {
   const cartCount = getItemCount();
   const wishlistCount = wishlistItems.length;
   
+  const navigationItems = [
+    {
+      name: "Home",
+      path: "/",
+      role: "primary",
+    },
+    {
+      name: "Products",
+      path: "/products",
+      role: "primary",
+    },
+    {
+      name: "Categories",
+      path: "/categories",
+      role: "primary",
+    },
+    {
+      name: "Sale",
+      path: "/sale",
+      role: "primary",
+    },
+    {
+      name: "About",
+      path: "/about",
+      role: "primary",
+    },
+    {
+      name: "Contact",
+      path: "/contact",
+      role: "primary",
+    },
+    {
+      name: "Sell on EnzoBay",
+      path: "/seller",
+      role: "special",
+    },
+  ];
+
   useEffect(() => {
     setIsMenuOpen(false);
   }, [pathname]);
@@ -35,7 +72,6 @@ export default function Navbar() {
     }
   };
   
-  // Check if a path is active (exact match or starts with for nested routes)
   const isActivePath = (path: string, exact = false) => {
     if (exact) return pathname === path;
     return pathname === path || pathname.startsWith(`${path}/`);
@@ -49,7 +85,6 @@ export default function Navbar() {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Mobile menu button */}
           <div className="flex md:hidden">
             <button
               type="button"
@@ -65,82 +100,23 @@ export default function Navbar() {
             </button>
           </div>
           
-          {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <EnzoBayLogo variant={isScrolled ? "default" : "default"} animated={true} />
           </div>
           
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <Link 
-              to="/"
-              className={`nav-link ${isActivePath("/", true) ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
-            >
-              Home
-            </Link>
-            <div className="relative group">
+            {navigationItems.map((item) => (
               <Link 
-                to="/products"
-                className={`nav-link flex items-center ${isActivePath("/products") ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
+                key={item.path}
+                to={item.path}
+                className={`nav-link ${isActivePath(item.path, item.role === "primary") ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
               >
-                Products <ChevronDown className="ml-1 h-4 w-4 transition-transform group-hover:rotate-180" />
+                {item.name}
               </Link>
-              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                <div className="py-1" role="menu" aria-orientation="vertical">
-                  <Link
-                    to="/products"
-                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue transition-colors duration-200"
-                    role="menuitem"
-                  >
-                    All Products
-                  </Link>
-                  <Link
-                    to="/categories"
-                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue transition-colors duration-200"
-                    role="menuitem"
-                  >
-                    Categories
-                  </Link>
-                  <Link
-                    to="/products?sort=popular"
-                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue transition-colors duration-200"
-                    role="menuitem"
-                  >
-                    Most Popular
-                  </Link>
-                  <Link
-                    to="/products?sort=newest"
-                    className="block px-4 py-2 text-sm text-enzobay-neutral-700 hover:bg-enzobay-neutral-100 hover:text-enzobay-blue transition-colors duration-200"
-                    role="menuitem"
-                  >
-                    New Arrivals
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <Link 
-              to="/sale"
-              className={`nav-link ${isActivePath("/sale") ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
-            >
-              Sale
-            </Link>
-            <Link 
-              to="/about"
-              className={`nav-link ${isActivePath("/about") ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
-            >
-              About
-            </Link>
-            <Link 
-              to="/contact"
-              className={`nav-link ${isActivePath("/contact") ? "text-enzobay-orange" : "text-enzobay-neutral-700"}`}
-            >
-              Contact
-            </Link>
+            ))}
           </nav>
           
-          {/* Search and User Actions */}
           <div className="flex items-center space-x-4">
-            {/* Search Icon and Form */}
             <div className="relative">
               <button
                 type="button"
@@ -173,7 +149,6 @@ export default function Navbar() {
               )}
             </div>
             
-            {/* User menu */}
             <div className="relative group">
               <Link 
                 to="/login" 
@@ -217,7 +192,6 @@ export default function Navbar() {
               </div>
             </div>
             
-            {/* Wishlist Icon with Badge */}
             <Link 
               to="/wishlist" 
               className="text-enzobay-neutral-600 hover:text-enzobay-brown relative transition-colors duration-200"
@@ -231,7 +205,6 @@ export default function Navbar() {
               )}
             </Link>
             
-            {/* Cart Icon with Badge */}
             <Link 
               to="/cart" 
               className="text-enzobay-neutral-600 hover:text-enzobay-brown relative transition-colors duration-200"
@@ -248,19 +221,16 @@ export default function Navbar() {
         </div>
       </div>
       
-      {/* Mobile Menu Drawer */}
       <div 
         className={`fixed inset-0 flex z-40 md:hidden transition-opacity duration-300 ${
           isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Overlay */}
         <div 
           className="fixed inset-0 bg-black bg-opacity-50" 
           onClick={() => setIsMenuOpen(false)}
         ></div>
         
-        {/* Drawer panel */}
         <div 
           className={`relative flex-1 flex flex-col max-w-xs w-full bg-white transform transition-transform ease-in-out duration-300 ${
             isMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -285,62 +255,16 @@ export default function Navbar() {
           
           <div className="mt-5 px-4 border-t border-enzobay-neutral-200">
             <nav className="flex-1 mt-4 space-y-4">
-              <Link 
-                to="/"
-                className={`block text-base font-medium ${isActivePath("/", true) ? "text-enzobay-orange" : "text-enzobay-neutral-700"} hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link 
-                to="/products"
-                className={`block text-base font-medium ${isActivePath("/products") ? "text-enzobay-orange" : "text-enzobay-neutral-700"} hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Products
-              </Link>
-              <Link 
-                to="/categories"
-                className={`block text-base font-medium ${isActivePath("/categories") ? "text-enzobay-orange" : "text-enzobay-neutral-700"} pl-4 border-l-2 border-enzobay-neutral-100 hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Categories
-              </Link>
-              <Link 
-                to="/products?sort=newest"
-                className={`block text-base font-medium text-enzobay-neutral-700 pl-4 border-l-2 border-enzobay-neutral-100 hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                New Arrivals
-              </Link>
-              <Link 
-                to="/products?sort=popular"
-                className={`block text-base font-medium text-enzobay-neutral-700 pl-4 border-l-2 border-enzobay-neutral-100 hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Most Popular
-              </Link>
-              <Link 
-                to="/sale"
-                className={`block text-base font-medium ${isActivePath("/sale") ? "text-enzobay-orange" : "text-enzobay-neutral-700"} hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sale
-              </Link>
-              <Link 
-                to="/about"
-                className={`block text-base font-medium ${isActivePath("/about") ? "text-enzobay-orange" : "text-enzobay-neutral-700"} hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link 
-                to="/contact"
-                className={`block text-base font-medium ${isActivePath("/contact") ? "text-enzobay-orange" : "text-enzobay-neutral-700"} hover:text-enzobay-orange transition-colors duration-200`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </Link>
+              {navigationItems.map((item) => (
+                <Link 
+                  key={item.path}
+                  to={item.path}
+                  className={`block text-base font-medium ${isActivePath(item.path, item.role === "primary") ? "text-enzobay-orange" : "text-enzobay-neutral-700"} hover:text-enzobay-orange transition-colors duration-200`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
             </nav>
           </div>
           

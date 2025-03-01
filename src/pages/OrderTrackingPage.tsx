@@ -1,9 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useScrollToTop } from "../hooks/use-scroll";
+import { useToast } from "../components/ui/use-toast";
 
 const OrderTrackingPage = () => {
   useScrollToTop();
@@ -20,6 +21,14 @@ const OrderTrackingPage = () => {
   }>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const { toast } = useToast();
+
+  // Auto-track if order number is provided in URL
+  useEffect(() => {
+    if (orderNumber) {
+      handleTrackOrder(new Event("submit") as any);
+    }
+  }, [orderNumber]);
 
   const handleTrackOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,24 +44,48 @@ const OrderTrackingPage = () => {
     // Simulate API call
     setTimeout(() => {
       // Mock data for demonstration
-      if (trackingId === "ABC123" || trackingId === "123456") {
+      if (trackingId === "ABC123" || trackingId === "123456" || trackingId.startsWith("ORD")) {
+        const mockStatuses = ["Processing", "Shipped", "In Transit", "Out for Delivery", "Delivered"];
+        const randomStatus = mockStatuses[Math.floor(Math.random() * 3) + 1]; // Pick a status (excluding Delivered most times)
+        
+        const today = new Date();
+        const orderDate = new Date(today);
+        orderDate.setDate(today.getDate() - 5); // Order placed 5 days ago
+        
+        const statusIndex = mockStatuses.indexOf(randomStatus);
+        
         setOrderStatus({
-          status: "In Transit",
-          date: "March 1, 2025",
-          items: 3,
-          total: "Ksh 12,500",
+          status: randomStatus,
+          date: orderDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          items: Math.floor(Math.random() * 5) + 1, // 1 to 5 items
+          total: `Ksh ${Math.floor(Math.random() * 10000) + 2000}`, // Random price between 2000 and 12000
           address: "123 Mombasa Road, Nairobi, Kenya",
-          stages: [
-            { name: "Order Placed", completed: true, date: "March 1, 2025" },
-            { name: "Processing", completed: true, date: "March 2, 2025" },
-            { name: "In Transit", completed: true, date: "March 3, 2025" },
-            { name: "Out for Delivery", completed: false, date: "" },
-            { name: "Delivered", completed: false, date: "" }
-          ]
+          stages: mockStatuses.map((stage, index) => {
+            const stageDate = new Date(orderDate);
+            stageDate.setDate(orderDate.getDate() + index + 1);
+            
+            return {
+              name: stage,
+              completed: index <= statusIndex,
+              date: index <= statusIndex ? stageDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ""
+            };
+          })
+        });
+        
+        toast({
+          title: "Order Found",
+          description: `Order ${trackingId} is currently ${randomStatus}`,
+          variant: "default",
         });
       } else {
         setError("No order found with this tracking ID. Please check and try again.");
         setOrderStatus(null);
+        
+        toast({
+          title: "Order Not Found",
+          description: "Please check the tracking ID and try again.",
+          variant: "destructive",
+        });
       }
       
       setIsLoading(false);

@@ -32,8 +32,14 @@ import AccountPage from "./pages/AccountPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import AdminBannerManager from "./pages/admin/BannerManager";
+import { useScrollToTop } from "./hooks/use-scroll";
 
 const queryClient = new QueryClient();
+
+const ScrollToTop = () => {
+  useScrollToTop();
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -41,6 +47,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/product/:id" element={<ProductPage />} />

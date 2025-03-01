@@ -34,6 +34,7 @@ import OrderTrackingPage from "./pages/OrderTrackingPage";
 import AdminBannerManager from "./pages/admin/BannerManager";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import SellerDashboard from "./pages/seller/SellerDashboard";
+import SellerRegistration from "./pages/seller/SellerRegistration";
 import { useScrollToTop } from "./hooks/use-scroll";
 
 const queryClient = new QueryClient();
@@ -90,6 +91,7 @@ const App = () => (
           
           {/* Seller Routes */}
           <Route path="/seller" element={<SellerDashboard />} />
+          <Route path="/seller/register" element={<SellerRegistration />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

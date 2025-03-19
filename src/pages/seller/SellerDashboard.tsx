@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
@@ -44,7 +43,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
-import { CATEGORIES, PRODUCT_CATEGORIES } from "../../lib/types";
+import { CATEGORIES } from "../../lib/types";
 
 // Mock API endpoints and utility functions
 const API_ENDPOINTS = {

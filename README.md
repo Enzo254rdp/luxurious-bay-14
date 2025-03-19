@@ -1,69 +1,383 @@
-# Welcome to your Lovable project
 
-## Project info
+# EnzoBay E-commerce Platform
 
-**URL**: https://lovable.dev/projects/6ddecaae-6bee-4518-b7e5-681074300f2a
+## Overview
 
-## How can I edit this code?
+EnzoBay is a modern e-commerce platform built with React, TypeScript, and Tailwind CSS. The application offers a comprehensive shopping experience with features for customers, sellers, and administrators.
 
-There are several ways of editing your application.
+## Live Demo
 
-**Use Lovable**
+Visit the live application at: [https://lovable.dev/projects/6ddecaae-6bee-4518-b7e5-681074300f2a](https://lovable.dev/projects/6ddecaae-6bee-4518-b7e5-681074300f2a)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6ddecaae-6bee-4518-b7e5-681074300f2a) and start prompting.
+## Table of Contents
 
-Changes made via Lovable will be committed automatically to this repo.
+- [Architecture Overview](#architecture-overview)
+- [Core Features](#core-features)
+- [User Roles & Permissions](#user-roles--permissions)
+- [Current Implementation](#current-implementation)
+- [Missing Features & Implementation Plan](#missing-features--implementation-plan)
+- [Database Structure](#database-structure)
+- [Additional Features to Consider](#additional-features-to-consider)
+- [Development Guidelines](#development-guidelines)
+- [Technical Stack](#technical-stack)
 
-**Use your preferred IDE**
+## Architecture Overview
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+EnzoBay follows a component-based architecture with the following structure:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Pages**: Container components that represent different routes in the application
+- **Components**: Reusable UI elements and feature-specific components
+- **Hooks**: Custom React hooks for shared functionality
+- **Lib**: Utilities, types, stores, and API services
+- **UI Components**: Shadcn UI components for consistent design
 
-Follow these steps:
+## Core Features
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Customer Features
+- Product browsing and search
+- Category navigation
+- Product filtering and sorting
+- Shopping cart management
+- Wishlist functionality
+- User account management
+- Order placement and tracking
+- Recently viewed products
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Seller Features
+- Seller dashboard
+- Product management (CRUD operations)
+- Order management
+- Sales analytics
+- Inventory management
+- Product tag management (New, Featured, etc.)
+- Discount management
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Admin Features
+- Admin dashboard
+- User management
+- Seller approval and monitoring
+- Banner management
+- Flash sale configuration
+- Category management
+- Product review and moderation
+- Platform-wide analytics
+- System configuration
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## User Roles & Permissions
 
-**Edit a file directly in GitHub**
+### Customer
+- Browse products
+- Place orders
+- Manage personal account
+- Create wishlists
+- Track orders
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Seller
+- Manage their product catalog
+- Process orders
+- Set product prices and discounts
+- Tag products (New, Featured, etc.)
+- View sales analytics
+- Manage inventory
 
-**Use GitHub Codespaces**
+### Admin
+- Approve/deny sellers
+- Monitor all orders (oversight role)
+- Review and moderate products
+- Delete substandard products (poor images, inaccurate descriptions)
+- Manage system-wide banners
+- Configure flash sales
+- Manage product categories
+- View platform-wide analytics
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Current Implementation
 
-## What technologies are used for this project?
+The current implementation includes:
 
-This project is built with .
+- Complete customer shopping experience
+- Basic product catalog display
+- Shopping cart functionality
+- Wishlist management
+- User authentication (simulated)
+- Product detail views
+- Category navigation
+- Recently viewed products
+- Responsive design for mobile and desktop
+- Basic seller dashboard
+- Basic admin dashboard
 
-- Vite
-- TypeScript
+## Missing Features & Implementation Plan
+
+### Authentication & Authorization (High Priority)
+- Implement real authentication with JWT
+- Complete role-based access control
+- Email verification
+- Password reset functionality
+
+### Order Processing (High Priority)
+- Complete checkout process
+- Payment gateway integration
+- Order status management
+- Email notifications for orders
+
+### Seller Features (Medium Priority)
+- Complete product creation and editing interface
+- Order fulfillment workflow
+- Sales reports and analytics
+- Inventory management system
+- Commission and payment tracking
+
+### Admin Features (Medium Priority)
+- User management interface
+- Seller approval workflow
+- Complete banner management system
+- Comprehensive analytics dashboard
+- System configuration interface
+
+### Customer Features (Medium Priority)
+- Account settings page
+- Order history view
+- Address management
+- Review and rating system
+
+### Performance & Technical (Low Priority)
+- Image optimization
+- Server-side rendering for SEO
+- Advanced search functionality
+- Performance optimization
+
+## Database Structure
+
+The current implementation uses client-side state management with Zustand. For a production implementation, a proper database would be needed with the following structure:
+
+### Users Table
+- id (PK)
+- name
+- email (unique)
+- password_hash
+- role (customer, seller, admin)
+- created_at
+- updated_at
+- avatar_url
+- status (active, inactive, pending)
+
+### Products Table
+- id (PK)
+- seller_id (FK to Users)
+- name
+- description
+- price
+- currency
+- category_id (FK to Categories)
+- is_featured (boolean)
+- is_new (boolean)
+- discount (percentage)
+- in_stock (boolean)
+- created_at
+- updated_at
+- status (active, inactive, pending_review)
+
+### Product_Images Table
+- id (PK)
+- product_id (FK to Products)
+- image_url
+- position (for ordering)
+
+### Product_Details Table
+- id (PK)
+- product_id (FK to Products)
+- brand
+- model
+- material
+- dimensions
+- weight
+
+### Product_Options Table
+- id (PK)
+- product_id (FK to Products)
+- option_type (color, size, etc.)
+- option_value
+
+### Categories Table
+- id (PK)
+- name
+- description
+- image_url
+- parent_category_id (FK to Categories, for nested categories)
+
+### Product_Tags Table
+- id (PK)
+- product_id (FK to Products)
+- tag_name
+
+### Orders Table
+- id (PK)
+- user_id (FK to Users)
+- status
+- total_amount
+- shipping_address_id (FK to Addresses)
+- payment_method
+- created_at
+- updated_at
+
+### Order_Items Table
+- id (PK)
+- order_id (FK to Orders)
+- product_id (FK to Products)
+- quantity
+- price_at_time_of_order
+- discount_at_time_of_order
+
+### Addresses Table
+- id (PK)
+- user_id (FK to Users)
+- address_line_1
+- address_line_2
+- city
+- state
+- postal_code
+- country
+- is_default (boolean)
+
+### Wishlists Table
+- id (PK)
+- user_id (FK to Users)
+- name
+- created_at
+
+### Wishlist_Items Table
+- id (PK)
+- wishlist_id (FK to Wishlists)
+- product_id (FK to Products)
+- added_at
+
+### Reviews Table
+- id (PK)
+- product_id (FK to Products)
+- user_id (FK to Users)
+- rating
+- comment
+- created_at
+- status (approved, pending, rejected)
+
+### Banners Table
+- id (PK)
+- title
+- subtitle
+- description
+- cta_text
+- cta_link
+- image_url
+- position
+- status
+- priority
+- start_date
+- end_date
+- created_at
+- updated_at
+
+### Flash_Sales Table
+- id (PK)
+- name
+- description
+- start_date
+- end_date
+- created_by (FK to Users)
+- status
+
+### Flash_Sale_Products Table
+- id (PK)
+- flash_sale_id (FK to Flash_Sales)
+- product_id (FK to Products)
+- discount_percentage
+
+## Additional Features to Consider
+
+### Customer Experience
+- Product recommendations based on browsing history
+- Product comparison tool
+- Guest checkout
+- Advanced filtering options
+- Product bundle offers
+- Loyalty program
+- Product Q&A section
+- Live chat support
+
+### Seller Tools
+- Bulk product import/export
+- Automated inventory alerts
+- Marketing tools (promotions, coupons)
+- Return management system
+- Tax calculation tools
+- Shipping integration
+
+### Admin Capabilities
+- Content management system for blog/articles
+- SEO management tools
+- Advanced reporting and business intelligence
+- Multi-language support
+- Currency conversion
+- Affiliate program management
+
+### Technical Enhancements
+- Progressive Web App (PWA) capabilities
+- API documentation for potential third-party integrations
+- Elasticsearch for advanced search
+- Redis caching for performance
+- Webhooks for event-driven architecture
+- GraphQL API
+
+## Development Guidelines
+
+### Code Style
+- Follow TypeScript best practices
+- Use functional components with hooks
+- Implement proper error handling
+- Write unit tests for critical functionality
+- Use proper type definitions
+
+### UI/UX Guidelines
+- Follow the established color scheme
+- Maintain responsive design for all screen sizes
+- Ensure accessibility compliance
+- Use consistent component styling
+- Implement proper loading states and error handling in UI
+
+### State Management
+- Use Zustand for global state
+- Use React Query for server state
+- Keep component state local when possible
+- Implement proper caching strategies
+
+## Technical Stack
+
+### Frontend
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- Shadcn UI
+- Zustand (State Management)
+- React Router
+- React Query
+- Lucide Icons
 
-## How can I deploy this project?
+### Planned Backend (Not Yet Implemented)
+- Node.js / Express or Next.js API Routes
+- PostgreSQL / MySQL
+- Prisma / TypeORM
+- JWT Authentication
+- RESTful API
+- Optional: GraphQL
 
-Simply open [Lovable](https://lovable.dev/projects/6ddecaae-6bee-4518-b7e5-681074300f2a) and click on Share -> Publish.
+### DevOps (Future)
+- CI/CD Pipeline
+- Docker
+- Automated Testing
+- Performance Monitoring
 
-## I want to use a custom domain - is that possible?
+## Getting Started
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Start the development server with `npm run dev`
+4. Access the application at `http://localhost:5173`
